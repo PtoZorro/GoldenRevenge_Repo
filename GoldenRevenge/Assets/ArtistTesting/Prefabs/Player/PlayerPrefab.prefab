@@ -134,6 +134,7 @@ MonoBehaviour:
   maxDistance: 3
   finalDistance: 0
   sideRayDistance: 0.3
+  sideRayAngle: 0
   distanceFromHit: 0.85
   distanceFromSideHit: 0.2
   smooth: 15
@@ -270,6 +271,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4664299409231856404}
+  - {fileID: 4835425308269792719}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2851035646119462243
@@ -303,7 +305,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5066584964982818798}
-  m_Father: {fileID: 4664299409231856404}
+  m_Father: {fileID: 2322909791172047777}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9053468752864666967
 MonoBehaviour:
@@ -318,20 +320,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 6932836835740211940}
-  playerInput: {fileID: 2476270698998031855}
+  playerInput: {fileID: 0}
   playerCamera: {fileID: 3955353533786194320}
-  marker: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
-  cameraMoveSpeed: 120
+    m_Bits: 64
+  cameraMoveSpeed: 80
   clampAngle: 60
   mouseSensitivity: 40
   stickSensitivity: 150
   lockEnemyRadius: 20
   lockEnemyAngle: 4
-  cameraLockSpeed: 15
-  camLocked: 0
+  cameraLockSpeed: 25
 --- !u!1 &3046232734602232561
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,7 +424,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4664299409231856404}
-  - component: {fileID: 2476270698998031855}
   - component: {fileID: 2489847356645051740}
   - component: {fileID: 7785113158994039896}
   - component: {fileID: 8501212275221401739}
@@ -450,144 +449,8 @@ Transform:
   m_Children:
   - {fileID: 4287480260745705511}
   - {fileID: 6932836835740211940}
-  - {fileID: 4835425308269792719}
   m_Father: {fileID: 2322909791172047777}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2476270698998031855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6060264587080653964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 023881847f3e01e49bc0abd158651a7f,
-    type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9053468752864666967}
-        m_TargetAssemblyTypeName: CameraFollow, Assembly-CSharp
-        m_MethodName: OnDeviceChange
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2489847356645051740}
-        m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-        m_MethodName: OnMove
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 46c527d1-de13-4336-ba6e-1387d38eeb8a
-    m_ActionName: Player/Move[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9053468752864666967}
-        m_TargetAssemblyTypeName: CameraFollow, Assembly-CSharp
-        m_MethodName: OnLook
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 22014384-9db6-492a-aad3-5c658bdc1777
-    m_ActionName: Player/Look[/XInputControllerWindows/rightStick,/Mouse/delta]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9053468752864666967}
-        m_TargetAssemblyTypeName: CameraFollow, Assembly-CSharp
-        m_MethodName: OnLook
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: 0c29a1b9-2909-499f-9cf4-5cabd2e2637c
-    m_ActionName: Player/Lock Camera[/XInputControllerWindows/rightStickPress,/Mouse/middleButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 9b17f01e-b8a3-42a9-8ffa-bd9adec31657
-    m_ActionName: Player/Attack[/XInputControllerWindows/rightTrigger,/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: fb967b91-ceba-4ca3-9168-f502d7f68657
-    m_ActionName: UI/Navigate[/XInputControllerWindows/leftStick/up,/XInputControllerWindows/rightStick/up,/XInputControllerWindows/leftStick/down,/XInputControllerWindows/rightStick/down,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/rightStick/left,/XInputControllerWindows/leftStick/right,/XInputControllerWindows/rightStick/right,/XInputControllerWindows/dpad,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: a6774f32-2bcb-474c-b0f1-8f93f36f4b95
-    m_ActionName: UI/Submit[/Keyboard/enter,/XInputControllerWindows/buttonSouth]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 50ac59f5-4132-4808-bdda-fc5ad520c300
-    m_ActionName: UI/Cancel[/Keyboard/escape,/XInputControllerWindows/buttonEast]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: aad9fee8-1c05-4b53-b47a-1f736768885d
-    m_ActionName: UI/Point[/Mouse/position]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 89eb8e65-0309-4aeb-aa73-b81c0dca05e9
-    m_ActionName: UI/Click[/Mouse/leftButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2417b65d-a160-4532-a2b4-679c33ec91f1
-    m_ActionName: UI/ScrollWheel[/Mouse/scroll]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 62c42f99-5831-4843-9c65-8781a404d043
-    m_ActionName: UI/MiddleClick[/Mouse/middleButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 35db935c-744b-4b50-bc37-039fdd825a02
-    m_ActionName: UI/RightClick[/Mouse/rightButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 92b5d334-5425-473f-b4a7-03f4d6484003
-    m_ActionName: UI/TrackedDevicePosition
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 251305c2-ec9c-491d-aac3-a9465e8131be
-    m_ActionName: UI/TrackedDeviceOrientation
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &2489847356645051740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,6 +469,8 @@ MonoBehaviour:
   rotationSmooth: 15
   isWalk: 0
   isRun: 0
+  walkAnimMinSpeed: 0
+  minSpeedToRunAnim: 0
 --- !u!136 &7785113158994039896
 CapsuleCollider:
   m_ObjectHideFlags: 0

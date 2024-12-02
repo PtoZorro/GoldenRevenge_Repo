@@ -1649,21 +1649,6 @@ PrefabInstance:
       propertyPath: playerRB
       value: 
       objectReference: {fileID: 387515248}
-    - target: {fileID: 9053468752864666967, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
-        type: 3}
-      propertyPath: cameraLockSpeed
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 9053468752864666967, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
-        type: 3}
-      propertyPath: cameraMoveSpeed
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 9053468752864666967, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
-        type: 3}
-      propertyPath: enemyLayer.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

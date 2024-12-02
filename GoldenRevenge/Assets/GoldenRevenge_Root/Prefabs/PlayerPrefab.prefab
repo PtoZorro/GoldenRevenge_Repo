@@ -134,6 +134,7 @@ MonoBehaviour:
   maxDistance: 3
   finalDistance: 0
   sideRayDistance: 0.3
+  sideRayAngle: 0
   distanceFromHit: 0.85
   distanceFromSideHit: 0.2
   smooth: 15
@@ -323,15 +324,14 @@ MonoBehaviour:
   playerCamera: {fileID: 3955353533786194320}
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
-  cameraMoveSpeed: 120
+    m_Bits: 64
+  cameraMoveSpeed: 80
   clampAngle: 60
   mouseSensitivity: 40
   stickSensitivity: 150
   lockEnemyRadius: 20
   lockEnemyAngle: 4
-  cameraLockSpeed: 15
-  camLocked: 0
+  cameraLockSpeed: 25
 --- !u!1 &3046232734602232561
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,7 +478,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6060264587080653964}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: c261f1e60bb418a40b294e02f041ed83, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
