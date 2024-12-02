@@ -10,13 +10,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform cameraPos;
     [SerializeField] Animator animator;
 
-    [Header("Movement values")]
+    [Header("Movement Stats")]
     [SerializeField] float speed;
     [SerializeField] float rotationSmooth;
 
-    [Header("Animation States")]
+    [Header("Animation Config")]
     [SerializeField] bool isWalk;
     [SerializeField] bool isRun;
+    [SerializeField] float walkAnimMinSpeed;
+    [SerializeField] float minSpeedToRunAnim;
 
     [Header("Input values")]
     Vector2 moveInput;
@@ -67,15 +69,16 @@ public class PlayerMovement : MonoBehaviour
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
 
-        // Calculamos el movimiento multiplicando con la velocidad
-        Vector3 movement = desiredMoveDirection.normalized * speed * inputMagnitude * Time.fixedDeltaTime;
+        // Aplicamos la dirección deseada y la velocidad al Rigidbody utilizando la velocidad
+        Vector3 targetVelocity = desiredMoveDirection.normalized * speed * inputMagnitude;
 
-        // Calculamos cual será la próxima posición sumando el movimiento a la posición actual del RB
-        Vector3 newPosition = rb.position + movement;
+        // Suavizamos la transición de velocidad para evitar movimientos bruscos
+        rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime * 10f);
 
-        // Nos movemos mediante el RB
-        rb.MovePosition(newPosition);
+        // Evitar que se acumule velocidad en el eje Y
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
     }
+
 
     void HandleRotation()
     {
@@ -95,14 +98,33 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleAnimations()
     {
-        // Según la velocidad activamos animación de caminar o trotar
-        if (moveInput.magnitude > 0 && moveInput.magnitude < 0.5) { isWalk = true; isRun = false; }
-        else if (moveInput.magnitude >= 0.5) { isWalk = false; isRun = true; }
-        else { isWalk = false; isRun = false; }
+        // Obtener la magnitud del input de movimiento
+        float inputMagnitude = moveInput.magnitude;
 
-        animator.SetBool("walk", isWalk ? true : false);
-        animator.SetBool("run", isRun ? true : false);
+        // Según la velocidad activamos animación de caminar o trotar
+        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim)
+        {
+            isWalk = true;
+            isRun = false;
+            animator.SetFloat("walkSpeed", Mathf.Lerp(walkAnimMinSpeed, 1f, inputMagnitude / minSpeedToRunAnim)); // Velocidad de animación ajustada
+        }
+        else if (inputMagnitude >= minSpeedToRunAnim)
+        {
+            isWalk = false;
+            isRun = true;
+            animator.SetFloat("walkSpeed", 1f); // Velocidad estándar para trotar/correr
+        }
+        else
+        {
+            isWalk = false;
+            isRun = false;
+            animator.SetFloat("walkSpeed", 0f); // Detener la animación
+        }
+
+        animator.SetBool("walk", isWalk);
+        animator.SetBool("run", isRun);
     }
+
 
     public void OnMove(InputAction.CallbackContext context)
     {

@@ -9,6 +9,7 @@ public class CameraCollision : MonoBehaviour
     [SerializeField] float maxDistance;
     [SerializeField] float finalDistance;
     [SerializeField] float sideRayDistance;
+    [SerializeField] float sideRayAngle;
     [SerializeField] float distanceFromHit;
     [SerializeField] float distanceFromSideHit;
     [SerializeField] float smooth;
@@ -47,8 +48,6 @@ public class CameraCollision : MonoBehaviour
                 // Si el Linecast no ha detectado haremos una comprobación con 4 Raycast diferentes que salen en oblicuo desde lel mismo sitio
 
                 // Se definen cuatro direcciones en las que saldrá un Raycast oblicuo para evitar que la cámara entre en algunos objetos 
-
-                int sideRayAngle = 30; // Ángulo en el cual los Raycast saldrán respecto a la dirección contraria de la cámara
 
                 Vector3[] sideSelect;
                 sideSelect = new Vector3[4];
