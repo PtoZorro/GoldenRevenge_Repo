@@ -3,28 +3,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Object Components")]
+    [Header("Components")]
     Rigidbody rb;
 
     [Header("External Components")]
-    [SerializeField] Transform cameraPos;
-    [SerializeField] Animator animator;
+    [SerializeField] CameraBehaviour cam; // Script de control de cámara
+    [SerializeField] Transform cameraPos; // Posición de la cámara
 
     [Header("Movement Stats")]
-    [SerializeField] float speed;
-    [SerializeField] float rotationSmooth;
-
-    [Header("Animation Config")]
-    [SerializeField] bool isWalk;
-    [SerializeField] bool isRun;
-    [SerializeField] float walkAnimMinSpeed;
-    [SerializeField] float minSpeedToRunAnim;
+    [SerializeField] float speed; // Valor para controlar la velocidad
+    [SerializeField] float rotationSmooth; // Suavizado de la rotación del personaje
+    [SerializeField] float lockSpeed; // Velocidad a la cual el jugador apuntará hacia el enemigo
 
     [Header("Input values")]
-    Vector2 moveInput;
-    Vector3 desiredMoveDirection;
+    public Vector2 moveInput; // Input de movimiento
+    Vector3 desiredMoveDirection; // Dirección a la que el jugador se moverá y rotará
 
-    // Start is called before the first frame update
     void Start()
     {
         // Obtenemos las referencias necesarias
@@ -33,8 +27,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Manejo de animaciones
-        HandleAnimations();
+        
     }
 
     void FixedUpdate()
@@ -43,7 +36,9 @@ public class PlayerMovement : MonoBehaviour
         HandleMovement();
 
         // Rotación del personaje
-        HandleRotation();
+        if (!cam.camLocked) { HandleRotation(); }
+        // Mirar hacia el enemigo
+        else { FaceEnemy(); }
     }
 
     void HandleMovement()
@@ -95,39 +90,28 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
-    void HandleAnimations()
+    void FaceEnemy()
     {
-        // Obtener la magnitud del input de movimiento
-        float inputMagnitude = moveInput.magnitude;
+        // Calculamos la dirección hacia el enemigo
+        Vector3 directionToEnemy = cam.enemyLocked.transform.position - transform.position;
 
-        // Según la velocidad activamos animación de caminar o trotar
-        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim)
-        {
-            isWalk = true;
-            isRun = false;
-            animator.SetFloat("walkSpeed", Mathf.Lerp(walkAnimMinSpeed, 1f, inputMagnitude / minSpeedToRunAnim)); // Velocidad de animación ajustada
-        }
-        else if (inputMagnitude >= minSpeedToRunAnim)
-        {
-            isWalk = false;
-            isRun = true;
-            animator.SetFloat("walkSpeed", 1f); // Velocidad estándar para trotar/correr
-        }
-        else
-        {
-            isWalk = false;
-            isRun = false;
-            animator.SetFloat("walkSpeed", 0f); // Detener la animación
-        }
+        // Mantener solo la dirección en el plano X-Z, eliminando cualquier inclinación en Y
+        directionToEnemy.y = 0;
 
-        animator.SetBool("walk", isWalk);
-        animator.SetBool("run", isRun);
+        // Calculamos la rotación deseada solo en el eje Y
+        Quaternion targetRotation = Quaternion.LookRotation(directionToEnemy);
+
+        // Mantenemos la rotación suavizada solo en el eje Y
+        Quaternion currentRotation = rb.rotation;
+        Quaternion smoothedRotation = Quaternion.Slerp(currentRotation, targetRotation, rotationSmooth * Time.fixedDeltaTime);
+
+        // Aplicar solo la rotación en el eje Y (manteniendo las otras componentes intactas)
+        rb.MoveRotation(Quaternion.Euler(0, smoothedRotation.eulerAngles.y, 0));
     }
-
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        // Lectura de input de movimiento
         moveInput = context.ReadValue<Vector2>();
     }
 }

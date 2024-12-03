@@ -11,10 +11,10 @@ public class CameraBehaviour : MonoBehaviour
     [SerializeField] PlayerInput playerInput;
     [SerializeField] Camera playerCamera;
     [SerializeField] LayerMask enemyLayer;
+    public GameObject enemyLocked;
     GameObject marker;
 
     [Header("Private References")]
-    GameObject enemyLocked;
     Vector3 velocity = Vector3.zero;
 
     [Header("Stats")]
@@ -30,7 +30,7 @@ public class CameraBehaviour : MonoBehaviour
 
     [Header("Conditional Values")]
     bool isGamepad;
-    bool camLocked;
+    public bool camLocked;
 
     [Header("Input")]
     Vector2 lookInput;
@@ -151,17 +151,14 @@ public class CameraBehaviour : MonoBehaviour
 
     void LookAtEnemy()
     {
-        if (enemyLocked != null)
-        {
-            // Calculamos la dirección hacia el enemigo
-            Vector3 directionToEnemy = enemyLocked.transform.position - transform.position;
+        // Calculamos la dirección hacia el enemigo
+        Vector3 directionToEnemy = enemyLocked.transform.position - transform.position;
 
-            // Calculamos la rotación deseada para mirar al enemigo
-            Quaternion targetRotation = Quaternion.LookRotation(directionToEnemy);
+        // Calculamos la rotación deseada para mirar al enemigo
+        Quaternion targetRotation = Quaternion.LookRotation(directionToEnemy);
 
-            // Realizamos una rotación suave desde la rotación actual hacia la rotación deseada
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, cameraLockSpeed * Time.deltaTime);
-        }
+        // Realizamos una rotación suave desde la rotación actual hacia la rotación deseada
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, cameraLockSpeed * Time.deltaTime);
     }
 
     void MarkerPosOnEnemy()
@@ -185,6 +182,7 @@ public class CameraBehaviour : MonoBehaviour
 
     public void OnLook(InputAction.CallbackContext context)
     {
+        // Leer input de cámara
         lookInput = context.ReadValue<Vector2>();
     }
 
@@ -192,6 +190,7 @@ public class CameraBehaviour : MonoBehaviour
     {
         if (context.started)
         {
+            // Leer input de bloqueo de cámara en enemigo
             DetectEnemy();
         }
     }
