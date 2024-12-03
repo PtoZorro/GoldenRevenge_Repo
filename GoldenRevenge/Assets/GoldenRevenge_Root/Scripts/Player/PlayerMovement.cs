@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,11 +25,6 @@ public class PlayerMovement : MonoBehaviour
     {
         // Obtenemos las referencias necesarias
         rb = GetComponent<Rigidbody>();
-    }
-
-    void Update()
-    {
-        
     }
 
     void FixedUpdate()
