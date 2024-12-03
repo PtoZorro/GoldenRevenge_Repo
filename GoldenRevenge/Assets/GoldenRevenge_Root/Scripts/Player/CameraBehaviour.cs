@@ -137,7 +137,7 @@ public class CameraBehaviour : MonoBehaviour
                 // Si no encontramos ningún enemigo
                 enemyLocked = null;
             }
-
+            
         }
         else if (camLocked)
         {

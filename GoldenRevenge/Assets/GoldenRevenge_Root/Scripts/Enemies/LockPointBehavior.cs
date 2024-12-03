@@ -13,7 +13,7 @@ public class LockPointBehavior : MonoBehaviour
     [SerializeField] float maxSpeed;
     [SerializeField] float farPointY;
 
-    private Vector3 initialPosition;
+    private float initialHeight;
 
     void Start()
     {
@@ -21,7 +21,7 @@ public class LockPointBehavior : MonoBehaviour
         transform.localPosition = new Vector3(0, farPointY, 0);
 
         // Guardamos la posición inicial del objeto
-        initialPosition = transform.position;
+        initialHeight = transform.position.y;
 
         // Encontramos al jugador en la escena 
         playerPos = GameObject.Find("Player")?.transform;
@@ -40,15 +40,18 @@ public class LockPointBehavior : MonoBehaviour
             float t = 1 - Mathf.Clamp01(distanceToPlayer / minDistance);
 
             // Calculamos la nueva posición vertical del objeto de manera proporcional
-            float newYPosition = Mathf.Lerp(initialPosition.y, initialPosition.y + riseHeight, t);
+            float newYPosition = Mathf.Lerp(initialHeight, initialHeight + riseHeight, t);
 
             // Subimos el objeto con una velocidad limitada
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, newYPosition, transform.position.z), maxSpeed * Time.deltaTime);
         }
         else
         {
+            // Recuperamos solo la altura inicial
+            Vector3 desiredHeight = new Vector3(transform.position.x, initialHeight, transform.position.z);
+
             // Si el jugador se aleja más de la distancia mínima, el objeto vuelve a su posición inicial
-            transform.position = Vector3.MoveTowards(transform.position, initialPosition, maxSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, desiredHeight, maxSpeed * Time.deltaTime);
         }
     }
 }

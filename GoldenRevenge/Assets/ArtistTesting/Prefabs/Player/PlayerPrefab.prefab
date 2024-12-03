@@ -325,13 +325,15 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  enemyLocked: {fileID: 0}
   cameraMoveSpeed: 80
   clampAngle: 60
   mouseSensitivity: 40
   stickSensitivity: 150
   lockEnemyRadius: 20
   lockEnemyAngle: 4
-  cameraLockSpeed: 25
+  cameraLockSpeed: 20
+  camLocked: 0
 --- !u!1 &3046232734602232561
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,6 +428,7 @@ GameObject:
   - component: {fileID: 4664299409231856404}
   - component: {fileID: 3084358026956593749}
   - component: {fileID: 2489847356645051740}
+  - component: {fileID: 1179076425068999870}
   - component: {fileID: 7785113158994039896}
   - component: {fileID: 8501212275221401739}
   m_Layer: 0
@@ -476,7 +479,19 @@ MonoBehaviour:
       m_Calls: []
   m_ControlsChangedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9053468752864666967}
+        m_TargetAssemblyTypeName: CameraBehaviour, Assembly-CSharp
+        m_MethodName: OnDeviceChange
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
@@ -587,14 +602,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb89387b91a33645a1b64c3ccf8c6af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 9053468752864666967}
   cameraPos: {fileID: 4835425308269792719}
-  animator: {fileID: 5580724738499094996}
   speed: 5
   rotationSmooth: 15
-  isWalk: 0
-  isRun: 0
-  walkAnimMinSpeed: 0
-  minSpeedToRunAnim: 0
+  lockSpeed: 25
+  moveInput: {x: 0, y: 0}
+--- !u!114 &1179076425068999870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6060264587080653964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 127c5112b1333314b90392a1f6a52e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 9053468752864666967}
+  anim: {fileID: 5580724738499094996}
+  minSpeedToRunAnim: 0.6
+  walkAnimMinSpeed: 0.2
 --- !u!136 &7785113158994039896
 CapsuleCollider:
   m_ObjectHideFlags: 0
