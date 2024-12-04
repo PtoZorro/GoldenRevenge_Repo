@@ -1194,11 +1194,6 @@ PrefabInstance:
       propertyPath: m_ControlsChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnDeviceChange
       objectReference: {fileID: 0}
-    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
-        type: 3}
-      propertyPath: sideRayAngle
-      value: 40
-      objectReference: {fileID: 0}
     - target: {fileID: 5580724738499094996, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
       propertyPath: m_Enabled
