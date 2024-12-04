@@ -64,11 +64,11 @@ public class PlayerMovement : MonoBehaviour
         // Aplicamos la dirección deseada y la velocidad al Rigidbody utilizando la velocidad
         Vector3 targetVelocity = desiredMoveDirection.normalized * speed * inputMagnitude;
 
+        // Conservamos la velocidad normal de caida en eje Y
+        targetVelocity.y = rb.velocity.y;
+
         // Suavizamos la transición de velocidad para evitar movimientos bruscos
         rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, Time.fixedDeltaTime * 10f);
-
-        // Evitar que se acumule velocidad en el eje Y
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
     }
 
 
