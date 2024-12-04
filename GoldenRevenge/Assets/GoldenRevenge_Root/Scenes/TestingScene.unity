@@ -122,6 +122,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &45606389 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6932836835740211940, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+    type: 3}
+  m_PrefabInstance: {fileID: 1582398143}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &132341744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1181,18 +1187,53 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3084358026956593749, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
-      propertyPath: m_Enabled
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3084358026956593749, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
-      propertyPath: m_ControlsChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1989924679}
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3084358026956593749, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
-      propertyPath: m_ControlsChangedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnDeviceChange
+      propertyPath: m_ActionEvents.Array.data[2].m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: CameraBehaviour, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 45606389}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: smoothTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: smoothSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: cameraHeight
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: cameraRadius
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: cameraPadding
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291004942951264837, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: collisionLayers.m_Bits
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 5580724738499094996, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
@@ -1204,18 +1245,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a28b6ea18ea84c43aa5545fb5eaf448, type: 3}
---- !u!114 &1989924679 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 9053468752864666967, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
-    type: 3}
-  m_PrefabInstance: {fileID: 1582398143}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2069ccb75fc64d74fa29f4d3c3cfa892, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2091037353
 GameObject:
   m_ObjectHideFlags: 0

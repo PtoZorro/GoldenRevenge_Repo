@@ -90,7 +90,7 @@ public class PlayerAnimations : MonoBehaviour
         anim.SetBool(currentAnim, true);
 
         // Desactivamos animación anterior
-        anim.SetBool(prevAnim, false);
+        if (prevAnim != null) anim.SetBool(prevAnim, false);
         prevAnim = currentAnim; // Indicamos cual será la animación previo en la próxima transición
     }
 }
