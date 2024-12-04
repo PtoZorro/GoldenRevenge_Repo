@@ -132,12 +132,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minDistance: 1
   maxDistance: 3
-  finalDistance: 0
-  sideRayDistance: 0.3
-  sideRayAngle: 0
-  distanceFromHit: 0.85
-  distanceFromSideHit: 0.2
+  distanceFromHit: 0.5
+  collisionOffset: 0.5
   smooth: 15
+  cornerOffsetX: 0.3
+  cornerOffsetY: 0.2
 --- !u!20 &3955353533786194320
 Camera:
   m_ObjectHideFlags: 0
@@ -507,12 +506,36 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5291004942951264837}
+        m_TargetAssemblyTypeName: CameraCollision, Assembly-CSharp
+        m_MethodName: OnMove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: bca79bb9-d571-4c27-8567-cab2331545ec
     m_ActionName: Gameplay/Move[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 9053468752864666967}
         m_TargetAssemblyTypeName: CameraBehaviour, Assembly-CSharp
+        m_MethodName: OnLook
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5291004942951264837}
+        m_TargetAssemblyTypeName: CameraCollision, Assembly-CSharp
         m_MethodName: OnLook
         m_Mode: 0
         m_Arguments:
