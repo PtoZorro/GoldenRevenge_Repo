@@ -12,10 +12,13 @@ public class PlayerAnimations : MonoBehaviour
     [Header("Stats")]
     [SerializeField] float minSpeedToRunAnim; // Velocidad mínima a la que el personaje empezará a trotar
     [SerializeField] float walkAnimMinSpeed; // Velocidad mínima a la que la animación de caminar se reproduce
+    [SerializeField] float smoothBlendMove; // Velocidad a la que transiciona entre los distintos caminados en el Blend Tree
 
     [Header("Conditional Values")]
     string currentAnim; // Animación que activamos
     string prevAnim; // Animación previa
+    private float currentXSpeed;
+    private float currentYSpeed;
 
     void Start()
     {
@@ -26,15 +29,16 @@ public class PlayerAnimations : MonoBehaviour
     void Update()
     {
         // Manejos de animaciones
-        HandleAnimations();
+        MoveAnimations();
+
+        // Si la cámara está bloqueada se calcula el lado hacia el que caminamos
+        LockedMoveValues();
     }
 
-    void HandleAnimations()
+    void MoveAnimations()
     {
         // Obtener la magnitud del input de movimiento
         float inputMagnitude = move.moveInput.magnitude;
-        float moveX = move.moveInput.x;
-        float moveY = move.moveInput.y;
 
         // Según la velocidad activamos animación de caminar o trotar
         if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim)
@@ -46,51 +50,58 @@ public class PlayerAnimations : MonoBehaviour
         }
         else if (inputMagnitude >= minSpeedToRunAnim) // Animación de trote
         {
-            // Si no hay fijación en el enemigo nos movemos hacia delante
-            if (!cam.camLocked)
-            {
-                currentAnim = "run";
-            }
-            else // Si hay fijación en el enemigo comprobamos hacia que lado caminamos
-            {
-                // Valor absoluto de movimiento en cada eje
-                float absMoveX = Mathf.Abs(moveX);
-                float absMoveY = Mathf.Abs(moveY);
-
-                // Si el movimiento horizontal tiene más peso
-                if (absMoveX > absMoveY)
-                {
-                    currentAnim = moveX > 0 ? "runRight" : "runLeft";
-                }
-                else // Si el movimiento vertical tiene más peso
-                {
-                    currentAnim = moveY > 0 ? "run" : "runBack";
-                }
-            }
+            currentAnim = "run";
 
             // Velocidad de la animación según la velocidad de movimiento
             anim.SetFloat("walkSpeed", 1f);
         }
         else // Animación de Iddle
         {
-            currentAnim = "iddle";
-            anim.SetFloat("walkSpeed", 0f);
+            currentAnim = null;
         }
 
-        // Activar animación seleccionada solo si cambia el estado
-        if ((currentAnim != prevAnim) || (prevAnim == null))
+        // Se cambia animación (Primer valor: animación para reproducir, Segundo valor: animación que interrumpir)
+        UpdateAnimationState(currentAnim, prevAnim);
+    }
+
+    void LockedMoveValues()
+    {
+        if (currentAnim == "run")
         {
-            UpdateAnimationState();
+            // Input instantáneo del teclado
+            float targetXSpeed = move.moveInput.x;
+            float targetYSpeed = move.moveInput.y;
+
+            // Interpolación suave de la velocidad (De esta manera evitamos que no haya interpolación al no usar input analógico)
+            currentXSpeed = Mathf.Lerp(currentXSpeed, targetXSpeed, Time.deltaTime / smoothBlendMove);
+            currentYSpeed = Mathf.Lerp(currentYSpeed, targetYSpeed, Time.deltaTime / smoothBlendMove);
+
+            if (!cam.camLocked) // Si la cámara no está fijada, solo trotamos hacia delante 
+            {
+                // Aplicar la magnitud de input a las variables del animator
+                anim.SetFloat("XSpeed", 0);
+                anim.SetFloat("YSpeed", Mathf.Abs(currentYSpeed));
+            }
+            else // Si la cámara está fijada en enemigo, se contemplan el trote hacia los 4 lados
+            {
+                // Aplicar la magnitud de input a las variables del animator
+                anim.SetFloat("XSpeed", currentXSpeed);
+                anim.SetFloat("YSpeed", currentYSpeed);
+            }
         }
     }
 
-    void UpdateAnimationState()
+    void UpdateAnimationState(string animToSet, string previousAnim)
     {
-        // Activamos animación actual
-        anim.SetBool(currentAnim, true);
+        // Activar animación seleccionada solo si cambia el estado
+        if ((animToSet != previousAnim) || (previousAnim == null))
+        {
+            // Activamos animación actual
+            if (animToSet != null) anim.SetBool(animToSet, true);
 
-        // Desactivamos animación anterior
-        if (prevAnim != null) anim.SetBool(prevAnim, false);
-        prevAnim = currentAnim; // Indicamos cual será la animación previo en la próxima transición
+            // Desactivamos animación anterior
+            if (previousAnim != null) anim.SetBool(previousAnim, false);
+            prevAnim = currentAnim; // Indicamos cual será la animación previa en la próxima transición
+        }
     }
 }
