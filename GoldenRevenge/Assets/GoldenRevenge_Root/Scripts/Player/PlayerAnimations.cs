@@ -10,16 +10,12 @@ public class PlayerAnimations : MonoBehaviour
     [SerializeField] Animator anim;
 
     [Header("Stats")]
-    [SerializeField] float minSpeedToRunAnim;
-    [SerializeField] float walkAnimMinSpeed;
+    [SerializeField] float minSpeedToRunAnim; // Velocidad mínima a la que el personaje empezará a trotar
+    [SerializeField] float walkAnimMinSpeed; // Velocidad mínima a la que la animación de caminar se reproduce
 
-    // Estados previos para resetear animaciones
-    bool prevIddle = false;
-    bool prevWalk = false;
-    bool prevRun = false;
-    bool prevRunBack = false;
-    bool prevRunRight = false;
-    bool prevRunLeft = false;
+    [Header("Conditional Values")]
+    string currentAnim; // Animación que activamos
+    string prevAnim; // Animación previa
 
     void Start()
     {
@@ -40,18 +36,10 @@ public class PlayerAnimations : MonoBehaviour
         float moveX = move.moveInput.x;
         float moveY = move.moveInput.y;
 
-        // Flags de estado de animación actual
-        bool iddle = false;
-        bool walk = false;
-        bool run = false;
-        bool runBack = false;
-        bool runRight = false;
-        bool runLeft = false;
-
         // Según la velocidad activamos animación de caminar o trotar
         if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim)
         {
-            walk = true;
+            currentAnim = "walk";
 
             // Velocidad de la animación según la velocidad de movimiento
             anim.SetFloat("walkSpeed", Mathf.Lerp(walkAnimMinSpeed, 1f, inputMagnitude / minSpeedToRunAnim));
@@ -61,7 +49,7 @@ public class PlayerAnimations : MonoBehaviour
             // Si no hay fijación en el enemigo nos movemos hacia delante
             if (!cam.camLocked)
             {
-                run = true;
+                currentAnim = "run";
             }
             else // Si hay fijación en el enemigo comprobamos hacia que lado caminamos
             {
@@ -72,13 +60,11 @@ public class PlayerAnimations : MonoBehaviour
                 // Si el movimiento horizontal tiene más peso
                 if (absMoveX > absMoveY)
                 {
-                    runRight = moveX > 0;
-                    runLeft = moveX < 0;
+                    currentAnim = moveX > 0 ? "runRight" : "runLeft";
                 }
                 else // Si el movimiento vertical tiene más peso
                 {
-                    run = moveY > 0;
-                    runBack = moveY < 0;
+                    currentAnim = moveY > 0 ? "run" : "runBack";
                 }
             }
 
@@ -87,26 +73,24 @@ public class PlayerAnimations : MonoBehaviour
         }
         else // Animación de Iddle
         {
-            iddle = true;
+            currentAnim = "iddle";
             anim.SetFloat("walkSpeed", 0f);
         }
 
-        // Activar animaciones solo si el estado ha cambiado
-        UpdateAnimationState("iddle", iddle, ref prevIddle);
-        UpdateAnimationState("walk", walk, ref prevWalk);
-        UpdateAnimationState("run", run, ref prevRun);
-        UpdateAnimationState("runBack", runBack, ref prevRunBack);
-        UpdateAnimationState("runRight", runRight, ref prevRunRight);
-        UpdateAnimationState("runLeft", runLeft, ref prevRunLeft);
+        // Activar animación seleccionada solo si cambia el estado
+        if ((currentAnim != prevAnim) || (prevAnim == null))
+        {
+            UpdateAnimationState();
+        }
     }
 
-    void UpdateAnimationState(string parameterName, bool currentState, ref bool previousState)
+    void UpdateAnimationState()
     {
-        if (currentState != previousState)
-        {
-            anim.SetBool(parameterName, currentState);
-            previousState = currentState;
-        }
-        else { currentState = false; }
+        // Activamos animación actual
+        anim.SetBool(currentAnim, true);
+
+        // Desactivamos animación anterior
+        if (prevAnim != null) anim.SetBool(prevAnim, false);
+        prevAnim = currentAnim; // Indicamos cual será la animación previo en la próxima transición
     }
 }
