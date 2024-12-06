@@ -481,6 +481,7 @@ MonoBehaviour:
   anim: {fileID: 5580724738499094996}
   minSpeedToRunAnim: 0.6
   walkAnimMinSpeed: 0.2
+  smoothBlendMove: 0
 --- !u!136 &7785113158994039896
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -602,6 +603,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4287480260745705511}
     m_Modifications:
+    - target: {fileID: 1220832493149819377, guid: 0289b69dac6e1374190bea22bc91ebe7,
+        type: 3}
+      propertyPath: m_Name
+      value: Body
+      objectReference: {fileID: 0}
     - target: {fileID: 6047421626002389296, guid: 0289b69dac6e1374190bea22bc91ebe7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -656,11 +662,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 2c956573c79d0ee4fb01a592d8924072, type: 2}
+      objectReference: {fileID: 9100000, guid: f5dad4020392b174989abcd55c7a2846, type: 2}
     - target: {fileID: 9219628808038601812, guid: 0289b69dac6e1374190bea22bc91ebe7,
         type: 3}
       propertyPath: m_Name
-      value: PlayerAnim
+      value: PlayerArmature
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
