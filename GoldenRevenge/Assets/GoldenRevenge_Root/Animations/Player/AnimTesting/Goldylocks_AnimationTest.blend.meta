@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a7f94308345db944aa0505f5575ca1cb
+guid: b7abc9469ab473c42ac7cde6f05a2e0c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -62,9 +62,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 1
     - serializedVersion: 16
-      name: Walk
+      name: walk
       takeName: Scene
-      internalID: -1609281748187839663
+      internalID: -8800838248204228948
       firstFrame: 1
       lastFrame: 30
       wrapMode: 0
