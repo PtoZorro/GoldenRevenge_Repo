@@ -14,11 +14,11 @@ public class PlayerAnimations : MonoBehaviour
     [SerializeField] float walkAnimMinSpeed; // Velocidad mínima a la que la animación de caminar se reproduce
     [SerializeField] float smoothBlendMove; // Velocidad a la que transiciona entre los distintos caminados en el Blend Tree
 
-    [Header("Conditional Values")]
+    // Valores condicionales
     string currentAnim; // Animación que activamos
     string prevAnim; // Animación previa
-    private float currentXSpeed;
-    private float currentYSpeed;
+    float currentXSpeed;
+    float currentYSpeed;
 
     void Start()
     {
