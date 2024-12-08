@@ -5,8 +5,9 @@ using UnityEngine;
 public class PlayerAnimations : MonoBehaviour
 {
     [Header("Components")]
-    PlayerMovement move;
-    [SerializeField] CameraBehaviour cam;
+    PlayerMovement move; // Script de control de movimiento
+    PlayerCombat combat; // Script de control de combate
+    [SerializeField] CameraBehaviour cam; // Script de control de cámara
     [SerializeField] Animator anim;
 
     [Header("Stats")]
@@ -17,13 +18,14 @@ public class PlayerAnimations : MonoBehaviour
     // Valores condicionales
     string currentAnim; // Animación que activamos
     string prevAnim; // Animación previa
-    float currentXSpeed;
-    float currentYSpeed;
+    float currentXSpeed; // Valor de input Horizontal para BlendTree de caminado
+    float currentYSpeed; // Valor de input Vertical para BlendTree de caminado
 
     void Start()
     {
         // Obtenemos componentes
         move = GetComponent<PlayerMovement>();
+        combat = GetComponent<PlayerCombat>();
     }
 
     void Update()
@@ -31,12 +33,21 @@ public class PlayerAnimations : MonoBehaviour
         // Manejos de animaciones
         MoveAnimations();
 
-        // Si la cámara está bloqueada se calcula el lado hacia el que caminamos
-        LockedMoveValues();
+        // Manejo de animaciones de atque solo si recibe input
+        if (combat.isAttacking)
+        {
+            AttackAnimation();
+        }
     }
 
     void MoveAnimations()
     {
+        // Si estamos atacando no hay movimiento
+        if (combat.isAttacking)
+        {
+            return;
+        }
+
         // Obtener la magnitud del input de movimiento
         float inputMagnitude = move.moveInput.magnitude;
 
@@ -60,8 +71,11 @@ public class PlayerAnimations : MonoBehaviour
             currentAnim = null;
         }
 
+        // Si la cámara está bloqueada se calcula el lado hacia el que caminamos
+        LockedMoveValues();
+
         // Se cambia animación (Primer valor: animación para reproducir, Segundo valor: animación que interrumpir)
-        UpdateAnimationState(currentAnim, prevAnim);
+        UpdateAnimationState();
     }
 
     void LockedMoveValues()
@@ -91,16 +105,29 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    void UpdateAnimationState(string animToSet, string previousAnim)
+    public void AttackAnimation() // Animación de ataque en marcha
+    {
+        // Activamos animación dea ataque
+        currentAnim = "attack1";
+        UpdateAnimationState();
+    }
+
+    public void EndAttackAnimation() // Al acabar la animación de ataque quitamos estado de ataque general
+    {
+        combat.isAttacking = false; 
+        combat.rotationLocked = false; // se libera la rotación de personaje
+    }
+
+    void UpdateAnimationState()
     {
         // Activar animación seleccionada solo si cambia el estado
-        if ((animToSet != previousAnim) || (previousAnim == null))
+        if ((currentAnim != prevAnim) || (prevAnim == null))
         {
             // Activamos animación actual
-            if (animToSet != null) anim.SetBool(animToSet, true);
+            if (currentAnim != null) anim.SetBool(currentAnim, true);
 
             // Desactivamos animación anterior
-            if (previousAnim != null) anim.SetBool(previousAnim, false);
+            if (prevAnim != null) anim.SetBool(prevAnim, false);
             prevAnim = currentAnim; // Indicamos cual será la animación previa en la próxima transición
         }
     }

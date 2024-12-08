@@ -6,15 +6,26 @@ using UnityEngine.InputSystem;
 public class AnimationEvents : MonoBehaviour
 {
     [Header("External References")]
-    [SerializeField] PlayerCombat PlayerCombat;
+    [SerializeField] PlayerAnimations animations; // Script de control de animaciones
+    [SerializeField] PlayerCombat combat; // Script de control de combate
 
-    void EnableCollider() // Método para habilitar el colisionador de las armas mediante la animación
+    void EnableCollider() // Habilitar el collider de las armas mediante la animación
     {
-
+        combat.EnableCollider();
     }
 
-    void DisableCollider() // Método para deshabilitar el colisionador de las armas mediante la animación
+    void DisableCollider() // Deshabilitar el collider de las armas mediante la animación
     {
+        combat.DisableCollider();
+    }
 
+    void LockRotation() // Deshabilita la rotación en el momento de inpacto
+    {
+        combat.LockRotation();
+    }
+
+    void EndAttackAnimation() // Notificar que se ha acabado la animación de ataque
+    {
+        animations.EndAttackAnimation();
     }
 }

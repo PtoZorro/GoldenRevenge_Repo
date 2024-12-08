@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
     [Header("External References")]
-    [SerializeField] GameObject weaponCollider;
-    [SerializeField] Transform weapon;
+    [SerializeField] GameObject weaponCollider; // Hitbox del arma del jugador
+    [SerializeField] Transform weapon; // Posición del arma en el Rig
 
     // Valores condicionales
-    bool colliderActive;
+    public bool isAttacking; // Valor que indica que estamos atacando
+    public bool rotationLocked; // Valor que indica que nos se puede rotar
+    bool colliderActive; // Valor que indica que la HitBox del arma está activa
 
     // Posiciones
     Vector3 colliderInitialPos;
@@ -18,6 +21,8 @@ public class PlayerCombat : MonoBehaviour
     void Start()
     {
         // Valores de inicio
+        isAttacking = false;
+        rotationLocked = false;
         colliderActive = false;
         colliderInitialPos = transform.position;
         colliderInitialRot = transform.rotation;
@@ -42,13 +47,13 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void EnableCollider() // Método para habilitar el colisionador de las armas mediante la animación
+    public void EnableCollider() // Método para habilitar el colisionador de las armas mediante la animación
     {
         weaponCollider.SetActive(true);
         colliderActive = true;
     }
 
-    void DisableCollider() // Método para deshabilitar el colisionador de las armas mediante la animación
+    public void DisableCollider() // Método para deshabilitar el colisionador de las armas mediante la animación
     {
         weaponCollider.SetActive(false);
         colliderActive = false;
@@ -56,5 +61,18 @@ public class PlayerCombat : MonoBehaviour
         // Lo llevamos al punto de inicio
         weaponCollider.transform.position = colliderInitialPos;
         weaponCollider.transform.rotation = colliderInitialRot;
+    }
+
+    public void LockRotation() // Deshabilita la rotación en el momento de inpacto
+    {
+        rotationLocked = true;
+    }
+
+    public void OnAttack(InputAction.CallbackContext context) // Lectura de input de ataque
+    {
+        if (context.started)
+        {
+            isAttacking = true;
+        }
     }
 }

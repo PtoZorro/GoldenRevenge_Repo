@@ -401,7 +401,19 @@ MonoBehaviour:
     m_ActionId: 1e81982e-9c6a-40f3-8d60-409c1b556031
     m_ActionName: Gameplay/Lock Camera[/XInputControllerWindows/rightStickPress,/Mouse/middleButton]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 11623615659869375}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: OnAttack
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 6e082a4f-a8f5-4bd3-a5c5-d4f9d2163f71
     m_ActionName: Gameplay/Attack[/XInputControllerWindows/rightTrigger,/Mouse/leftButton]
   - m_PersistentCalls:
@@ -481,6 +493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponCollider: {fileID: 6132094541408019154}
   weapon: {fileID: 5865436143022380396}
+  isAttacking: 0
 --- !u!114 &1179076425068999870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,7 +753,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 9219628808038601812, guid: 0289b69dac6e1374190bea22bc91ebe7,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 618084783149899909}
   m_SourcePrefab: {fileID: 100100000, guid: 0289b69dac6e1374190bea22bc91ebe7, type: 3}
 --- !u!4 &4631109576287188912 stripped
 Transform:
@@ -760,3 +777,23 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1416875157307444864}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7807961920085662420 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9219628808038601812, guid: 0289b69dac6e1374190bea22bc91ebe7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1416875157307444864}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &618084783149899909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7807961920085662420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cfd624b5ee07e45a298cafc1f72ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animations: {fileID: 1179076425068999870}
+  combat: {fileID: 11623615659869375}

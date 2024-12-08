@@ -1,5 +1,5 @@
 {
-    "name": "Player",
+    "name": "PlayerInput",
     "maps": [
         {
             "name": "Gameplay",
@@ -134,7 +134,7 @@
                 {
                     "name": "",
                     "id": "29ec53f7-cdc8-44b1-b08c-ff0fc9c00a78",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",

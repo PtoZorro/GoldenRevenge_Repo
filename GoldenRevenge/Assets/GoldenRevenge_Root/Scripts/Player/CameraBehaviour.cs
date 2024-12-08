@@ -179,22 +179,21 @@ public class CameraBehaviour : MonoBehaviour
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context)
+    public void OnLook(InputAction.CallbackContext context) // Leer input de cámara
     {
-        // Leer input de cámara
         lookInput = context.ReadValue<Vector2>();
     }
 
-    public void OnLockCam(InputAction.CallbackContext context)
+    public void OnLockCam(InputAction.CallbackContext context) // Leer input de bloqueo de cámara en enemigo
     {
         if (context.started)
         {
-            // Leer input de bloqueo de cámara en enemigo
+            // Detectar enemigo que vamos a marcar
             DetectEnemy();
         }
     }
 
-    public void OnDeviceChange()
+    public void OnDeviceChange() // Detección del input que estamos utilizando
     {
         // Verificar si el control es mediante gamepad
         isGamepad = playerInput.currentControlScheme.Equals("Gamepad");

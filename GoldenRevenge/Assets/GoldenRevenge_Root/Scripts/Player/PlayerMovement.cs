@@ -8,8 +8,9 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     Rigidbody rb;
 
-    [Header("External Components")]
+    [Header("External References")]
     [SerializeField] CameraBehaviour cam; // Script de control de cámara
+    PlayerCombat combat; // Script de control de comabte
     [SerializeField] Transform cameraPos; // Posición de la cámara
 
     [Header("Movement Stats")]
@@ -19,16 +20,21 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Input values")]
     public Vector2 moveInput; // Input de movimiento
+    Vector3 inputFixed; // Vector corregido del input en base al movimiento en mundo (x, y, 0) >> (x, 0 ,y)
     Vector3 desiredMoveDirection; // Dirección a la que el jugador se moverá y rotará
 
     void Start()
     {
-        // Obtenemos las referencias necesarias
+        // Obtenemos componentes
         rb = GetComponent<Rigidbody>();
+        combat = GetComponent<PlayerCombat>();
     }
 
     void FixedUpdate()
     {
+        // Dirección a la que nos movemos y rotamos
+        CalculeDirection();
+
         // Movimiento del personaje
         HandleMovement();
 
@@ -38,8 +44,15 @@ public class PlayerMovement : MonoBehaviour
         else { FaceEnemy(); }
     }
 
-    void HandleMovement()
+    void CalculeDirection() 
     {
+        // Si estamos atacando no hay movimiento
+        if (combat.rotationLocked)
+        {
+            rb.angularVelocity = Vector3.zero; // Detenemos la rotación residual
+            return;
+        }
+
         // Obtener la dirección hacia adelante y hacia la derecha de la cámara
         Vector3 forward = cameraPos.forward;
         Vector3 right = cameraPos.right;
@@ -53,10 +66,20 @@ public class PlayerMovement : MonoBehaviour
         right.Normalize();
 
         // Ajustamos el input ya que queremos movernos en ejes X y Z
-        Vector3 inputFixed = new Vector3(moveInput.x, 0, moveInput.y);
+        inputFixed = new Vector3(moveInput.x, 0, moveInput.y);
 
         // Convertimos el input en la dirección del mundo usando la dirección de la cámara
         desiredMoveDirection = forward * inputFixed.z + right * inputFixed.x;
+    }
+
+    void HandleMovement()
+    {
+        // Si estamos atacando no hay movimiento
+        if (combat.isAttacking)
+        {
+            rb.velocity = Vector3.zero; // Detenemos las fuerzas de movimiento residual
+            return;
+        }
 
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
@@ -74,6 +97,13 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleRotation()
     {
+        // Si estamos atacando no hay movimiento
+        if (combat.rotationLocked)
+        {
+            rb.angularVelocity = Vector3.zero; // Detenemos la rotación residual
+            return;
+        }
+
         if (moveInput != Vector2.zero)
         {
             // Calcular la rotación hacia la dirección en la que queremos movernos
@@ -89,6 +119,12 @@ public class PlayerMovement : MonoBehaviour
 
     void FaceEnemy()
     {
+        // Si estamos atacando no hay movimiento
+        if (combat.rotationLocked)
+        {
+            return;
+        }
+
         // Calculamos la dirección hacia el enemigo
         Vector3 directionToEnemy = cam.enemyLocked.transform.position - transform.position;
 
