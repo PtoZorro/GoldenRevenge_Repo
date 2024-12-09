@@ -135,6 +135,11 @@ PrefabInstance:
       propertyPath: maxAttacksCount
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: maxComboAttacks
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1815838972865178938, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
       propertyPath: m_Name

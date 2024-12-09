@@ -23,6 +23,16 @@ public class AnimationEvents : MonoBehaviour
         combat.LockRotation();
     }
 
+    void CanReadNextAction() // En cierto punto de la animación se puede leer el input de la siguiente acción
+    {
+        combat.CanReadNextAction();
+    }
+
+    void CanInterrupt() // Llegado a cierto punto de la animación, se puede interrumpir
+    {
+
+    }
+
     void EndAttackAnimation(int attackNum) // Notificar que se ha acabado la animación de ataque
     {
         combat.EndAttack(attackNum);

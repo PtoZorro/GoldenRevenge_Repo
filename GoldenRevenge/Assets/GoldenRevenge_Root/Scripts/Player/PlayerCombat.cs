@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("Components")]
+    PlayerAnimations anim;
+
     [Header("External References")]
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del jugador
     [SerializeField] Transform weapon; // Posición del arma en el Rig
@@ -13,8 +16,9 @@ public class PlayerCombat : MonoBehaviour
     public bool isAttacking; // Valor que indica que estamos atacando
     public bool rotationLocked; // Valor que indica que nos se puede rotar
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    public int maxAttacksInCombo; // Número máximo de ataques en un mismo combo
-    public int attackCount; // Número de ataques que realizará del combo
+    [SerializeField] bool canNextAttack; // Se permite o no acumular ataques al pulsar varias veces el input
+    public int maxComboAttacks; // Número máximo de ataques en un mismo combo
+    public int currentAttack; // Número de ataques que realizará del combo
 
     // Posiciones
     Vector3 colliderInitialPos;
@@ -22,9 +26,13 @@ public class PlayerCombat : MonoBehaviour
 
     void Start()
     {
+        // Referencias
+        anim = GetComponent<PlayerAnimations>();
+
         // Valores de inicio
         isAttacking = false;
-        attackCount = 0;
+        currentAttack = 0;
+        canNextAttack = true;
         rotationLocked = false;
         colliderActive = false;
         colliderInitialPos = transform.localPosition;
@@ -42,27 +50,34 @@ public class PlayerCombat : MonoBehaviour
 
     void Attack() // Gestiona el número de ataques y los ejecuta
     {
-        // Sumamos un ataque más del combo si no hemos llegado al máximo
-        if (attackCount < maxAttacksInCombo)
+        // Si es el primer ataque del combo o se nos permite activar el siguiente, asignamos ataque que se producirá
+        if (currentAttack == 0 || canNextAttack)
         {
-            attackCount++; // Sumamos número de ataque
+            currentAttack++; // Proximo ataque
             isAttacking = true; // Estado de ataque
-        }
+            canNextAttack = false; // Negamos siguiente ataque hasta que no lo indique el actual
 
-        // Nunca menor que 0 el numero de ataques
-        if (attackCount <= 0) attackCount = 0;
+            // Reproducimos la animación de ataque correspondiente
+            anim.AttackAnimations(currentAttack);
+        }
     }
 
     public void EndAttack(int attackNum) // Al acabar animación quitamos estado de ataque o pasamos al siguiente del combo
     {
-        // Si es el último ataque o hemos terminado de atacar, liberamos todo
-        if (attackNum >= attackCount || attackNum >= maxAttacksInCombo) 
+        // Si el ataque ejecutado es el último que se pretende ejecutar o es final de combo, se acaba el estado de ataque
+        if (attackNum >= currentAttack || attackNum == maxComboAttacks) 
         {
-            isAttacking = false; // Se libera estado de ataque
-            attackCount = 0; // Se resetea en contador de ataques
+            currentAttack = 0; // Contador de ataques a 0
+            isAttacking = false; 
+            canNextAttack = false;
         }
+        // Desbloqueamos rotación siempre al acabar animación
+        rotationLocked = false;
+    }
 
-        rotationLocked = false; // se libera la rotación de personaje
+    public void CanReadNextAction() // En cierto punto de la animación se puede leer el input de la siguiente acción
+    {
+        canNextAttack = true;
     }
 
     void FollowWeapon()

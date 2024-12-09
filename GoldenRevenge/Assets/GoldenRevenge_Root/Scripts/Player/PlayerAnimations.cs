@@ -32,12 +32,6 @@ public class PlayerAnimations : MonoBehaviour
     {
         // Manejos de animaciones
         MoveAnimations();
-
-        // Manejo de animaciones de atque solo si recibe input
-        if (combat.isAttacking)
-        {
-            AttackAnimation();
-        }
     }
 
     void MoveAnimations()
@@ -105,10 +99,10 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    public void AttackAnimation() // Animación de ataque en marcha
+    public void AttackAnimations(int attackNum) // Animación de ataque en marcha
     {
         // Activamos animación de ataque correspondiente a su número
-        currentAnim = "attack" + combat.attackCount;
+        currentAnim = "attack" + attackNum;
         UpdateAnimationState();
     }
 
