@@ -58,11 +58,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7313994948338956127, guid: 9b91efd98db06374393b00b53e1078d8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 73d115291b902c342afe1b3db6eb39e2, type: 2}
+    - target: {fileID: 872317075735787507, guid: 9b91efd98db06374393b00b53e1078d8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f28a7712626c2d4e90245d1f74fd68e, type: 2}
     - target: {fileID: 919132149155446097, guid: 9b91efd98db06374393b00b53e1078d8,
         type: 3}
       propertyPath: m_Name
       value: "SM_Caba\xF1a_1_Wall"
       objectReference: {fileID: 0}
+    - target: {fileID: 1346250241433878147, guid: 9b91efd98db06374393b00b53e1078d8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f28a7712626c2d4e90245d1f74fd68e, type: 2}
+    - target: {fileID: 5337460923910119465, guid: 9b91efd98db06374393b00b53e1078d8,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a77d9d144b7a28f46b44dc58d62a5b36, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: -2707943559455307455, guid: 9b91efd98db06374393b00b53e1078d8, type: 3}
