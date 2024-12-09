@@ -494,6 +494,9 @@ MonoBehaviour:
   weaponCollider: {fileID: 6132094541408019154}
   weapon: {fileID: 5865436143022380396}
   isAttacking: 0
+  rotationLocked: 0
+  maxAttacksInCombo: 3
+  attackCount: 0
 --- !u!114 &1179076425068999870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -795,5 +798,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04cfd624b5ee07e45a298cafc1f72ce7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animations: {fileID: 1179076425068999870}
   combat: {fileID: 11623615659869375}

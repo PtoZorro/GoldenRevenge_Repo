@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class AnimationEvents : MonoBehaviour
 {
     [Header("External References")]
-    [SerializeField] PlayerAnimations animations; // Script de control de animaciones
     [SerializeField] PlayerCombat combat; // Script de control de combate
 
     void EnableCollider() // Habilitar el collider de las armas mediante la animación
@@ -24,8 +23,8 @@ public class AnimationEvents : MonoBehaviour
         combat.LockRotation();
     }
 
-    void EndAttackAnimation() // Notificar que se ha acabado la animación de ataque
+    void EndAttackAnimation(int attackNum) // Notificar que se ha acabado la animación de ataque
     {
-        animations.EndAttackAnimation();
+        combat.EndAttack(attackNum);
     }
 }

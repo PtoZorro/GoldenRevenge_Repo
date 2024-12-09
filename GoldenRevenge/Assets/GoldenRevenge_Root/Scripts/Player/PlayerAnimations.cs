@@ -107,15 +107,9 @@ public class PlayerAnimations : MonoBehaviour
 
     public void AttackAnimation() // Animación de ataque en marcha
     {
-        // Activamos animación dea ataque
-        currentAnim = "attack1";
+        // Activamos animación de ataque correspondiente a su número
+        currentAnim = "attack" + combat.attackCount;
         UpdateAnimationState();
-    }
-
-    public void EndAttackAnimation() // Al acabar la animación de ataque quitamos estado de ataque general
-    {
-        combat.isAttacking = false; 
-        combat.rotationLocked = false; // se libera la rotación de personaje
     }
 
     void UpdateAnimationState()

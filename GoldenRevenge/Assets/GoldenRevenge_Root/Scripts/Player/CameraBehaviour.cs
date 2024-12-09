@@ -96,6 +96,7 @@ public class CameraBehaviour : MonoBehaviour
     {
         if (!camLocked)
         {
+            // Almacenamos enemigos que hay dentro del rango de detección
             Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, lockEnemyRadius, enemyLayer);
 
             float closestDistanceToCenter = Mathf.Infinity;
@@ -104,6 +105,7 @@ public class CameraBehaviour : MonoBehaviour
             // Coordenadas del centro de la pantalla
             Vector3 screenCenter = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
+            // Elegimos enemigo más cercano al centro de la pantalla
             foreach (Collider enemy in enemiesInRange)
             {
                 // Convertimos la posición del enemigo al espacio de pantalla
