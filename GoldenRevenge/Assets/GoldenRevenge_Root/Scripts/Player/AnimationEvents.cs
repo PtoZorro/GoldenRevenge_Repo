@@ -8,33 +8,39 @@ public class AnimationEvents : MonoBehaviour
     [Header("External References")]
     [SerializeField] PlayerCombat combat; // Script de control de combate
 
-    void EnableCollider() // Habilitar el collider de las armas mediante la animación
+    // Notificar que ha comenzado la animación de ataque
+    void StartAttackAnimation() 
+    {
+        combat.OnStartAttack();
+    }
+
+    // Habilitar el collider de las armas mediante la animación
+    void EnableCollider() 
     {
         combat.EnableCollider();
     }
 
-    void DisableCollider() // Deshabilitar el collider de las armas mediante la animación
+    // Deshabilitar el collider de las armas mediante la animación
+    void DisableCollider() 
     {
         combat.DisableCollider();
     }
 
-    void LockRotation() // Deshabilita la rotación en el momento de inpacto
+    // Deshabilita la rotación en cierto punto de la animación
+    void LockRotation() 
     {
         combat.LockRotation();
     }
 
-    void CanReadNextAction() // En cierto punto de la animación se puede leer el input de la siguiente acción
+    // Permite leer el siguiente input en cierto punto de la animación
+    void CanInterrupt() 
     {
-        combat.CanReadNextAction();
+        combat.CanInterrupt();
     }
 
-    void CanInterrupt() // Llegado a cierto punto de la animación, se puede interrumpir
+    // Notificar que se ha acabado la animación de ataque
+    void EndAttackAnimation() 
     {
-
-    }
-
-    void EndAttackAnimation(int attackNum) // Notificar que se ha acabado la animación de ataque
-    {
-        combat.EndAttack(attackNum);
+        combat.OnEndAttack();
     }
 }

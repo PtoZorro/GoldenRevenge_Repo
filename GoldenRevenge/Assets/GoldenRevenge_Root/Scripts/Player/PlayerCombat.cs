@@ -6,23 +6,33 @@ using UnityEngine.InputSystem;
 public class PlayerCombat : MonoBehaviour
 {
     [Header("Components")]
-    PlayerAnimations anim;
+    PlayerAnimations anim; // Script de control de animaciones
 
     [Header("External References")]
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del jugador
     [SerializeField] Transform weapon; // Posición del arma en el Rig
 
+    [Header("Stats")]
+    [SerializeField] int maxComboAttacks; // Número máximo de ataques en un mismo combo
+    [SerializeField] float attackRate; // Tiempo en que se nos permite accionar otro combo de ataques
+
     [Header("Conditional Values")]
     public bool isAttacking; // Valor que indica que estamos atacando
     public bool rotationLocked; // Valor que indica que nos se puede rotar
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    [SerializeField] bool canNextAttack; // Se permite o no acumular ataques al pulsar varias veces el input
-    public int maxComboAttacks; // Número máximo de ataques en un mismo combo
-    public int currentAttack; // Número de ataques que realizará del combo
+    bool canNextAction; // Se permite o no acumular ataques al pulsar varias veces el input
+    int currentAttack; // Número de ataques que realizará del combo
 
     // Posiciones
     Vector3 colliderInitialPos;
     Quaternion colliderInitialRot;
+
+    void Awake()
+    {
+        // Valores de inicio prioritarios
+        colliderInitialPos = transform.localPosition;
+        colliderInitialRot = transform.localRotation;
+    }
 
     void Start()
     {
@@ -32,11 +42,9 @@ public class PlayerCombat : MonoBehaviour
         // Valores de inicio
         isAttacking = false;
         currentAttack = 0;
-        canNextAttack = true;
+        canNextAction = true;
         rotationLocked = false;
         colliderActive = false;
-        colliderInitialPos = transform.localPosition;
-        colliderInitialRot = transform.localRotation;
 
         // En el inicio los colliders de armas empiezan apagados
         weaponCollider.SetActive(false);
@@ -48,55 +56,74 @@ public class PlayerCombat : MonoBehaviour
         FollowWeapon();
     }
 
-    void Attack() // Gestiona el número de ataques y los ejecuta
+    #region AttackManagement
+
+    // Gestiona cual es el próximo ataque y lo ejecuta
+    void Attack() 
     {
-        // Si es el primer ataque del combo o se nos permite activar el siguiente, asignamos ataque que se producirá
-        if (currentAttack == 0 || canNextAttack)
+        // Solo accionamos si tenemos permiso de atacar y no ha terminado el combo
+        if (canNextAction && currentAttack < maxComboAttacks)
         {
-            currentAttack++; // Proximo ataque
-            isAttacking = true; // Estado de ataque
-            canNextAttack = false; // Negamos siguiente ataque hasta que no lo indique el actual
+            // Se establecen parametros
+            isAttacking = true;
+            canNextAction = false;
+            currentAttack++;
 
             // Reproducimos la animación de ataque correspondiente
             anim.AttackAnimations(currentAttack);
         }
     }
 
-    public void EndAttack(int attackNum) // Al acabar animación quitamos estado de ataque o pasamos al siguiente del combo
+    // Al comenzar la animación se establecen parametros
+    public void OnStartAttack() 
     {
-        // Si el ataque ejecutado es el último que se pretende ejecutar o es final de combo, se acaba el estado de ataque
-        if (attackNum >= currentAttack || attackNum == maxComboAttacks) 
-        {
-            currentAttack = 0; // Contador de ataques a 0
-            isAttacking = false; 
-            canNextAttack = false;
-        }
-        // Desbloqueamos rotación siempre al acabar animación
-        rotationLocked = false;
+        // Permitimos rotación hasta que se ejecute parte del ataque
+        rotationLocked = false; 
     }
 
-    public void CanReadNextAction() // En cierto punto de la animación se puede leer el input de la siguiente acción
+    // El ataque que termine de reproducirse será el último del combo y llamará a la función
+    public void OnEndAttack() 
     {
-        canNextAttack = true;
+        // Se establecen parametros
+        isAttacking = false; 
+        rotationLocked = false; 
+        canNextAction = false;
+        currentAttack = 0;
+
+        // Pasado un tiempo configurable se podrá iniciar otro ataque
+        Invoke(nameof(AllowAttack), attackRate); 
     }
 
+    // Nos permite volver a iniciar un combo pasado un timepo "attackRate"
+    public void AllowAttack()
+    {
+        canNextAction = true;
+    }
+
+    #endregion
+
+    #region WeaponHitboxManagement
+
+    // Mantener el collider siguiendo al arma en el Rig
     void FollowWeapon()
     {
-        // Siempre seguirá al Rig solo cuando está activo
-        if (colliderActive) 
+        // Seguirá al Rig solo cuando el collider está activo
+        if (colliderActive)
         {
             weaponCollider.transform.position = weapon.position;
             weaponCollider.transform.rotation = weapon.rotation;
         }
     }
 
-    public void EnableCollider() // Método para habilitar el colisionador de las armas mediante la animación
+    // Habilitar el collider de las armas mediante la animación
+    public void EnableCollider() 
     {
         weaponCollider.SetActive(true);
         colliderActive = true;
     }
 
-    public void DisableCollider() // Método para deshabilitar el colisionador de las armas mediante la animación
+    // Deshabilitar el collider de las armas mediante la animación
+    public void DisableCollider() 
     {
         weaponCollider.SetActive(false);
         colliderActive = false;
@@ -106,10 +133,25 @@ public class PlayerCombat : MonoBehaviour
         weaponCollider.transform.localRotation = colliderInitialRot;
     }
 
-    public void LockRotation() // Deshabilita la rotación en el momento de inpacto
+    #endregion
+
+    #region GeneralAnimationEvents
+
+    // Permite leer el siguiente input en cierto punto de la animación
+    public void CanInterrupt() 
+    {
+        canNextAction = true;
+    }
+
+    // Deshabilita la rotación en cierto punto de la animación
+    public void LockRotation() 
     {
         rotationLocked = true;
     }
+
+    #endregion
+
+    #region InputReading
 
     public void OnAttack(InputAction.CallbackContext context) // Lectura de input de ataque
     {
@@ -118,4 +160,6 @@ public class PlayerCombat : MonoBehaviour
             Attack();
         }
     }
+
+    #endregion
 }

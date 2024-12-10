@@ -30,10 +30,13 @@ public class PlayerAnimations : MonoBehaviour
 
     void Update()
     {
-        // Manejos de animaciones
+        // Manejo de animaciones de movimiento
         MoveAnimations();
     }
 
+    #region MoveAnimationsLogic
+
+    // Manejo de animaciones de movimiento
     void MoveAnimations()
     {
         // Si estamos atacando no hay movimiento
@@ -72,6 +75,7 @@ public class PlayerAnimations : MonoBehaviour
         UpdateAnimationState();
     }
 
+    // Interpretación del input como dirección hacia la que el personaje corre mediante animación con BlendTree
     void LockedMoveValues()
     {
         if (currentAnim == "run")
@@ -84,7 +88,8 @@ public class PlayerAnimations : MonoBehaviour
             currentXSpeed = Mathf.Lerp(currentXSpeed, targetXSpeed, Time.deltaTime / smoothBlendMove);
             currentYSpeed = Mathf.Lerp(currentYSpeed, targetYSpeed, Time.deltaTime / smoothBlendMove);
 
-            if (!cam.camLocked) // Si la cámara no está fijada, solo trotamos hacia delante 
+            // Si la cámara no está fijada, solo trotamos hacia delante 
+            if (!cam.camLocked) 
             {
                 // Aplicar la magnitud de input a las variables del animator
                 anim.SetFloat("XSpeed", 0);
@@ -99,14 +104,22 @@ public class PlayerAnimations : MonoBehaviour
         }
     }
 
-    public void AttackAnimations(int attackNum) // Animación de ataque en marcha
+    #endregion
+
+    #region CombatAnimationsLogic
+
+    // Animación de ataque en marcha
+    public void AttackAnimations(int attackNum) 
     {
         // Activamos animación de ataque correspondiente a su número
         currentAnim = "attack" + attackNum;
         UpdateAnimationState();
     }
 
-    void UpdateAnimationState()
+    #endregion
+
+    // Método para activar cualquier animación
+    void UpdateAnimationState() 
     {
         // Activar animación seleccionada solo si cambia el estado
         if ((currentAnim != prevAnim) || (prevAnim == null))

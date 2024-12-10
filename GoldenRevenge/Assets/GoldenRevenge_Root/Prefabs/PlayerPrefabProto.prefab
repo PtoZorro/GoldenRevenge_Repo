@@ -235,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2069ccb75fc64d74fa29f4d3c3cfa892, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 6932836835740211940}
+  playerPos: {fileID: 6932836835740211940}
   playerInput: {fileID: 3084358026956593749}
   playerCamera: {fileID: 3955353533786194320}
   enemyLayer:
@@ -493,10 +493,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponCollider: {fileID: 6132094541408019154}
   weapon: {fileID: 5865436143022380396}
+  maxComboAttacks: 0
+  attackRate: 0
   isAttacking: 0
   rotationLocked: 0
-  maxAttacksInCombo: 3
-  attackCount: 0
 --- !u!114 &1179076425068999870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,7 +576,7 @@ GameObject:
   - component: {fileID: 5773480471012116229}
   m_Layer: 0
   m_Name: WeaponCollider
-  m_TagString: Untagged
+  m_TagString: PlayerWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

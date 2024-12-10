@@ -6,50 +6,47 @@ using UnityEngine.InputSystem;
 public class CameraBehaviour : MonoBehaviour
 {
     [Header("External References")]
-    [SerializeField] Transform target;
-    [SerializeField] PlayerInput playerInput;
-    [SerializeField] Camera playerCamera;
-    [SerializeField] LayerMask enemyLayer;
-    public GameObject enemyLocked;
-    GameObject marker;
-
-    [Header("Private References")]
-    Vector3 velocity = Vector3.zero;
+    [SerializeField] Transform playerPos; 
+    [SerializeField] PlayerInput playerInput; 
+    [SerializeField] Camera playerCamera; 
+    [SerializeField] LayerMask enemyLayer; // Layer en la que detectamos enemigos
+    public GameObject enemyLocked; // Enemigo marcado
+    GameObject marker; // Marcador que indica el enemigo marcado
 
     [Header("Stats")]
-    [SerializeField] float cameraMoveSpeed;
-    [SerializeField] float clampAngle;
-    [SerializeField] float mouseSensitivity;
-    [SerializeField] float stickSensitivity;
-    [SerializeField] float lockEnemyRadius;
-    [SerializeField] float lockEnemyAngle;
-    [SerializeField] float cameraLockSpeed;
-    private float rotX;
-    private float rotY;
+    [SerializeField] float cameraMoveSpeed; // Velocidad suavizada a la que la cámara sigue al jugador
+    [SerializeField] float clampAngle; // Angulo en que limitamos el giro vertical
+    [SerializeField] float mouseSensitivity; // Sensibilidad de input de Ratón
+    [SerializeField] float stickSensitivity; // Sensibilidad de input de Gamepad
+    [SerializeField] float lockEnemyRadius; // Distancia a la que detectamos enemigos que podamos marcar
+    [SerializeField] float lockEnemyAngle; // Ángulo al que deben encontrarse los enemigos respecto al frente de la cámara
+    [SerializeField] float cameraLockSpeed; // Velocidad a la que la cámara sigue al enemigo al marcarlo
+    private float rotX; // Valor de input vertical corregido a horizontal en mundo
+    private float rotY; // Valor de input horizontal corregido a vertical en mundo
 
     [Header("Conditional Values")]
-    bool isGamepad;
-    public bool camLocked;
+    bool isGamepad; // Nos indica si estamos usando Gamepad
+    public bool camLocked; // Indicamos si estamos marcando al enemigo
 
-    [Header("Input")]
-    Vector2 lookInput;
+    // Input
+    Vector2 lookInput; // Se almacena el valor del input de cámara
 
-    // Start is called before the first frame update
     void Start()
     {
+        // Obtener referencias
+        marker = GameObject.Find("EnemyMarker");
+
         // Definir valores de inicio
         Vector3 rot = transform.localRotation.eulerAngles;
         rotX = rot.x;
         rotY = rot.y;
         enemyLocked = null;
-        marker = GameObject.Find("EnemyMarker");
         marker.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Bloquar y esconder cursor
+        // Bloquar y esconder cursor (¡¡¡Hay que mover al Start cuando se pueda!!!)
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -66,6 +63,16 @@ public class CameraBehaviour : MonoBehaviour
         if (camLocked) { LookAtEnemy(); MarkerPosOnEnemy(); }
     }
 
+    # region CameraHandling
+
+    // Seguimiento de la camara al Player
+    void FollowPlayer()
+    {
+        // Desplazamos la cámara suavemente hacia la posición objetivo del jugador
+        transform.position = Vector3.Lerp(transform.position, playerPos.position, cameraMoveSpeed * Time.deltaTime);
+    }
+
+    // Manejo de rotación de cámara 
     void HandleRotation()
     {
         // Obtener input
@@ -86,12 +93,11 @@ public class CameraBehaviour : MonoBehaviour
         transform.rotation = localRotation;
     }
 
-    void FollowPlayer()
-    {
-        // Desplazamos la cámara suavemente hacia la posición objetivo del jugador
-        transform.position = Vector3.Lerp(transform.position, target.position, cameraMoveSpeed * Time.deltaTime);
-    }
+    #endregion
 
+    #region Camera/EnemyInteraction
+
+    // Detectar enemigo para marcarlo y fijar la cámara
     void DetectEnemy()
     {
         if (!camLocked)
@@ -150,6 +156,7 @@ public class CameraBehaviour : MonoBehaviour
         }
     }
 
+    // Fijación de cámara hacia un enemigo
     void LookAtEnemy()
     {
         // Calculamos la dirección hacia el enemigo
@@ -160,8 +167,12 @@ public class CameraBehaviour : MonoBehaviour
 
         // Realizamos una rotación suave desde la rotación actual hacia la rotación deseada
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, cameraLockSpeed * Time.deltaTime);
+
+        // Si el enemigo ha sido derrotado, dejamos de fijar cámara
+        camLocked = enemyLocked.activeSelf;
     }
 
+    // Colocar el marcador encima del enemigo (¡¡¡Considerar cambiar método a otro script!!!)
     void MarkerPosOnEnemy()
     {
         // Comprueba si hay un enemigo para seguir
@@ -181,23 +192,31 @@ public class CameraBehaviour : MonoBehaviour
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context) // Leer input de cámara
+    #endregion
+
+    #region InputReading
+
+    // Leer input de cámara
+    public void OnLook(InputAction.CallbackContext context) 
     {
         lookInput = context.ReadValue<Vector2>();
     }
 
-    public void OnLockCam(InputAction.CallbackContext context) // Leer input de bloqueo de cámara en enemigo
+    // Leer input de fijado de cámara en enemigo
+    public void OnLockCam(InputAction.CallbackContext context) 
     {
         if (context.started)
         {
-            // Detectar enemigo que vamos a marcar
             DetectEnemy();
         }
     }
 
-    public void OnDeviceChange() // Detección del input que estamos utilizando
+    // Detección del input que estamos utilizando
+    public void OnDeviceChange() 
     {
         // Verificar si el control es mediante gamepad
         isGamepad = playerInput.currentControlScheme.Equals("Gamepad");
     }
+
+    #endregion
 }
