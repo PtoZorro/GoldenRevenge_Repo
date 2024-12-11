@@ -172,7 +172,7 @@ public class CameraBehaviour : MonoBehaviour
         camLocked = enemyLocked.activeSelf;
     }
 
-    // Colocar el marcador encima del enemigo (¡¡¡Considerar cambiar método a otro script!!!)
+    // Colocar el marcador encima del enemigo
     void MarkerPosOnEnemy()
     {
         // Comprueba si hay un enemigo para seguir
@@ -190,6 +190,7 @@ public class CameraBehaviour : MonoBehaviour
             // Establece la posición del marcador
             marker.transform.position = screenPos;
         }
+        else { marker.SetActive(false); } // Escondemos marcador
     }
 
     #endregion

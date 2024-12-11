@@ -13,6 +13,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] Transform weapon; // Posición del arma en el Rig
 
     [Header("Stats")]
+    [SerializeField] int[] comboDamages; // Daños para cada ataque del combo
     [SerializeField] int maxComboAttacks; // Número máximo de ataques en un mismo combo
     [SerializeField] float attackRate; // Tiempo en que se nos permite accionar otro combo de ataques
 
@@ -21,7 +22,9 @@ public class PlayerCombat : MonoBehaviour
     public bool rotationLocked; // Valor que indica que nos se puede rotar
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
     bool canNextAction; // Se permite o no acumular ataques al pulsar varias veces el input
-    int currentAttack; // Número de ataques que realizará del combo
+    bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
+    int currentAttack; // El ataque que se ejecutará, mandado por el input
+    int attackNum; // El ataque que se está ejecutando, indicado por su animación
 
     // Posiciones
     Vector3 colliderInitialPos;
@@ -58,6 +61,27 @@ public class PlayerCombat : MonoBehaviour
 
     #region AttackManagement
 
+    // Hacemos daño al enemigo mediante la colisión
+    public void InflictDamage(EnemyCombat enemy)
+    {
+        // Solo si se permite ejercer daño
+        if (canDealDamage)
+        {
+            // Evitamos ejercer daño más de una vez por ataque
+            canDealDamage = false;
+
+            // Seleccionamos el daño del ataque que se está ejecutando
+            int damage = comboDamages[attackNum - 1];
+
+            // El enemigo recibe daño
+            enemy.TakeDamage(damage);
+        }
+    }
+
+    #endregion
+
+    #region ComboManagement
+
     // Gestiona cual es el próximo ataque y lo ejecuta
     void Attack() 
     {
@@ -75,8 +99,14 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Al comenzar la animación se establecen parametros
-    public void OnStartAttack() 
+    public void OnStartAttack(int attackAnimNum) 
     {
+        // Permitimos ejercer daño
+        canDealDamage = true;
+
+        // Indicamos que número de ataque se está ejecutando
+        attackNum = attackAnimNum;
+
         // Permitimos rotación hasta que se ejecute parte del ataque
         rotationLocked = false; 
     }

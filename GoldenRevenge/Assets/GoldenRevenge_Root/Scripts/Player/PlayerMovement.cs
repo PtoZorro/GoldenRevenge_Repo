@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Components")]
+    // Components
     Rigidbody rb;
 
-    [Header("External References")]
+    [Header("References")]
     [SerializeField] CameraBehaviour cam; // Script de control de cámara
     PlayerCombat combat; // Script de control de comabte
     [SerializeField] Transform cameraPos; // Posición de la cámara

@@ -40,15 +40,15 @@ public class LockPointBehavior : MonoBehaviour
             float newYPosition = Mathf.Lerp(farPointHeight, farPointHeight + riseHeight, t);
 
             // Subimos el objeto con una velocidad limitada
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, newYPosition, transform.position.z), riseSpeed * Time.deltaTime);
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, new Vector3(transform.localPosition.x, newYPosition, transform.localPosition.z), riseSpeed * Time.deltaTime);
         }
         else
         {
             // Recuperamos solo la altura inicial
-            Vector3 desiredHeight = new Vector3(transform.position.x, farPointHeight, transform.position.z);
+            Vector3 desiredHeight = new Vector3(transform.localPosition.x, farPointHeight, transform.localPosition.z);
 
             // Si el jugador se aleja más de la distancia mínima, el objeto vuelve a su posición inicial
-            transform.position = Vector3.MoveTowards(transform.position, desiredHeight, riseSpeed * Time.deltaTime);
+            transform.localPosition = Vector3.MoveTowards(transform.localPosition, desiredHeight, riseSpeed * Time.deltaTime);
         }
     }
 }

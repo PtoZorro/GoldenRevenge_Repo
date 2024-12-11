@@ -5,13 +5,15 @@ using UnityEngine.InputSystem;
 
 public class AnimationEvents : MonoBehaviour
 {
+    // Script exclusivo para controlar eventos de la animación
+
     [Header("External References")]
     [SerializeField] PlayerCombat combat; // Script de control de combate
 
-    // Notificar que ha comenzado la animación de ataque
-    void StartAttackAnimation() 
+    // Notificar que ha comenzado la animación de ataque y avisar de que ataque se está ejecutando
+    void StartAttackAnimation(int attackNum) 
     {
-        combat.OnStartAttack();
+        combat.OnStartAttack(attackNum);
     }
 
     // Habilitar el collider de las armas mediante la animación

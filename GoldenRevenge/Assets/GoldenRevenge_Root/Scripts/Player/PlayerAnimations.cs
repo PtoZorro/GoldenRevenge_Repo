@@ -49,7 +49,8 @@ public class PlayerAnimations : MonoBehaviour
         float inputMagnitude = move.moveInput.magnitude;
 
         // Según la velocidad activamos animación de caminar o trotar
-        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim)
+
+        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim) // Animación de caminado
         {
             currentAnim = "walk";
 
@@ -59,9 +60,6 @@ public class PlayerAnimations : MonoBehaviour
         else if (inputMagnitude >= minSpeedToRunAnim) // Animación de trote
         {
             currentAnim = "run";
-
-            // Velocidad de la animación según la velocidad de movimiento
-            anim.SetFloat("walkSpeed", 1f);
         }
         else // Animación de Iddle
         {

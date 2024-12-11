@@ -6,12 +6,14 @@ using UnityEngine;
 public class EnemyCombat : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject lockCamPoint;
+    [SerializeField] GameObject lockCamPoint; // Referencia al punto de fijado en cámara del enemigo
 
     [Header("Stats")]
-    [SerializeField] int health;
-    [SerializeField] int maxHealth;
-    [SerializeField] int damageRecived; // (Provisional, se debe mover)
+    [SerializeField] int health; // Salud del enemigo
+    [SerializeField] int maxHealth; // Salud máxima
+
+    [Header("Stats")]
+    public bool isAttacking; // Estado de atacar
 
     void Start()
     {
@@ -38,19 +40,9 @@ public class EnemyCombat : MonoBehaviour
     }
 
     // Recibir daño
-    void TakeDamage()
+    public void TakeDamage(int damageRecived)
     {
         // Restamos daño especificado
         health -= damageRecived;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        // Si el arma del Player inpacta
-        if (other.CompareTag("PlayerWeapon"))
-        {
-            // Recibir daño
-            TakeDamage();
-        }
     }
 }
