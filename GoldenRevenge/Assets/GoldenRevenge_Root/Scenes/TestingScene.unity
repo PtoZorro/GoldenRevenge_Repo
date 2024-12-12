@@ -901,6 +901,7 @@ MonoBehaviour:
   health: 0
   maxHealth: 100
   isAttacking: 0
+  rotationLocked: 0
 --- !u!195 &829735902
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -914,7 +915,7 @@ NavMeshAgent:
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 250
+  m_AngularSpeed: 600
   m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -935,8 +936,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac01b57175e2d9245a7d8576707abb23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combat: {fileID: 829735901}
   chasingSpeed: 5
   patrolSpeed: 3.5
+  rotationSmooth: 10
   attackRadius: 1.5
   detectRadius: 4
   lostRadius: 8

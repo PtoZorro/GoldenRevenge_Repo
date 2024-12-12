@@ -13,7 +13,8 @@ public class EnemyCombat : MonoBehaviour
     [SerializeField] int maxHealth; // Salud máxima
 
     [Header("Stats")]
-    public bool isAttacking; // Estado de atacar
+    public bool isAttacking; // Estado de atacando
+    public bool rotationLocked; // Negación de rotación
 
     void Start()
     {

@@ -18,8 +18,8 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] float attackRate; // Tiempo en que se nos permite accionar otro combo de ataques
 
     [Header("Conditional Values")]
-    public bool isAttacking; // Valor que indica que estamos atacando
-    public bool rotationLocked; // Valor que indica que nos se puede rotar
+    public bool isAttacking; // Estado de atacando
+    public bool rotationLocked; // Negación de rotación
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
     bool canNextAction; // Se permite o no acumular ataques al pulsar varias veces el input
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
