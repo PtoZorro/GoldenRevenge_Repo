@@ -493,8 +493,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponCollider: {fileID: 6132094541408019154}
   weapon: {fileID: 5865436143022380396}
-  maxComboAttacks: 0
-  attackRate: 0
+  comboDamages: 0f0000001100000014000000
+  maxComboAttacks: 3
+  attackRate: 0.5
   isAttacking: 0
   rotationLocked: 0
 --- !u!114 &1179076425068999870
@@ -630,7 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3a0c51eae8364048ab477fa7f68aaae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combat: {fileID: 11623615659869375}
+  combatGeneric: {fileID: 11623615659869375}
 --- !u!1 &6795404791999714018
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +708,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Body
       objectReference: {fileID: 0}
+    - target: {fileID: 1961916490359483909, guid: 0289b69dac6e1374190bea22bc91ebe7,
+        type: 3}
+      propertyPath: combatScript
+      value: 
+      objectReference: {fileID: 11623615659869375}
     - target: {fileID: 6047421626002389296, guid: 0289b69dac6e1374190bea22bc91ebe7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -770,11 +776,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 9219628808038601812, guid: 0289b69dac6e1374190bea22bc91ebe7,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 618084783149899909}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0289b69dac6e1374190bea22bc91ebe7, type: 3}
 --- !u!4 &4631109576287188912 stripped
 Transform:
@@ -794,22 +796,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1416875157307444864}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7807961920085662420 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9219628808038601812, guid: 0289b69dac6e1374190bea22bc91ebe7,
-    type: 3}
-  m_PrefabInstance: {fileID: 1416875157307444864}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &618084783149899909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7807961920085662420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04cfd624b5ee07e45a298cafc1f72ce7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  combat: {fileID: 11623615659869375}

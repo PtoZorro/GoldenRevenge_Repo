@@ -8,7 +8,14 @@ public class AnimationEvents : MonoBehaviour
     // Script exclusivo para controlar eventos de la animación
 
     [Header("External References")]
-    [SerializeField] PlayerCombat combat; // Script de control de combate
+    [SerializeField] MonoBehaviour combatScript; // Referencia genérica al script de combate
+    private ICombatEvents combat; // Referencia a la interfaz
+
+    private void Awake()
+    {
+        // Almacenar en la variable el script seleccionado (Player o Enemigo) usando la interfaz especificada
+        combat = combatScript as ICombatEvents;
+    }
 
     // Notificar que ha comenzado la animación de ataque y avisar de que ataque se está ejecutando
     void StartAttackAnimation(int attackNum) 

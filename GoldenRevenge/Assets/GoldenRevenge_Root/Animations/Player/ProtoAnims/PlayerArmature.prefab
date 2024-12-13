@@ -472,6 +472,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6047421626002389296}
   - component: {fileID: 6835188690014955348}
+  - component: {fileID: 1961916490359483909}
   m_Layer: 0
   m_Name: PlayerArmature
   m_TagString: Untagged
@@ -506,7 +507,7 @@ Animator:
   m_GameObject: {fileID: 9219628808038601812}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f5dad4020392b174989abcd55c7a2846, type: 2}
+  m_Controller: {fileID: 9100000, guid: a9a4a8181e1eb8f44b508410c3d4a2a9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -517,3 +518,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1961916490359483909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9219628808038601812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cfd624b5ee07e45a298cafc1f72ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatScript: {fileID: 0}

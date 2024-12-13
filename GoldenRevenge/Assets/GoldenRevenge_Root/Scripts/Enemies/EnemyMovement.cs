@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,9 +11,9 @@ public class EnemyMovement : MonoBehaviour
     NavMeshAgent agent;
 
     [Header("References")]
-    [SerializeField] EnemyCombat combat;
+    [SerializeField] EnemyCombat combat; // Script de control de combate
+    [SerializeField] List<Transform> patrolPoints; // Lista de puntos de patrullar
     Transform player;
-    [SerializeField] List<Transform> patrolPoints;
 
     [Header("Stats")]
     [SerializeField] float chasingSpeed; // Velocidad a la que el enemigo persigue al Player
@@ -31,6 +30,9 @@ public class EnemyMovement : MonoBehaviour
     public bool returnPatrol; // Estado de volver a Patrullar
     int currentPatrolPoint; // Punto que se setá persiguiendo actualmente
 
+    // Posiciones
+    Vector3 target;
+
     void Start()
     {
         // Obtenemos referencias
@@ -39,78 +41,82 @@ public class EnemyMovement : MonoBehaviour
         player = GameObject.Find("Player")?.transform;
 
         // Valores de inicio
-        agent.updateRotation = false;
+        ChangeStates(true, false, false); // Comienza Patrullando
     }
 
     void Update()
     {
-        // Monitoreamos la distancia al jugador constantemente
+        // Acción que ejecutará el enemigo según la distancia del jugador
         DetectPlayer();
 
         // Sigue al jugador cuando se dan las condiciones
         FollowPlayer();
 
-        // Patrulla cuando no detecta jugador
+        // Mira hacia el Objetivo cuando lo requiere
+        LookAtTarget();
+
+        // Funciones durante estado de Patrullaje
         Patrolling();
 
         // Funciones cuando el Player está en el area de ataque
         InAttackArea();
-
-        // Mira hacia el Player cuando lo requiere
-        LookAtPlayer();
     }
 
+    #region Detection&ChangeOfStates
+
+    // Acción que ejecutará el enemigo según la distancia del jugador
     void DetectPlayer()
     {
         // Obtenemos a que distancia está el jugador
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // Si el jugador está en el area de detección
-        if (distanceToPlayer <= detectRadius && distanceToPlayer > attackRadius)
+        // Si el jugador no está en el area de detección
+        if (distanceToPlayer >= lostRadius && !isPatrolling)
         {
-            isChasing = true;
-            isPatrolling = false;
-            combat.isAttacking = false;
+            ChangeStates(true, false, false); // Patrullando
         }
-        else if (distanceToPlayer >= lostRadius) // Si el jugador se ha alejado hasta el rango de pérdida
+        else if (distanceToPlayer <= detectRadius && distanceToPlayer > attackRadius) // Si el jugador está en el area de detección
         {
-            isChasing = false;
-            isPatrolling = true;
-            combat.isAttacking = false;
+            ChangeStates(false, true, false); // Persiguiendo
         }
         else if (distanceToPlayer <= attackRadius) // Si el jugador está en el area de ataque
         {
-            isChasing = false;
-            isPatrolling = false;
-            combat.isAttacking = true;
+            ChangeStates(false, false, true); // Atacando
         }
     }
 
-    // Función de perseguir al jugador
-    void FollowPlayer()
+    // Cambio de comportamiento del enemigo
+    void ChangeStates(bool patrolling, bool chasing, bool attacking)
     {
-        // Solo ejecutamos cuando esté en estado de perseguir
-        if (!isChasing) return;
-
-        // Establecemos la velocidad de persecución
-        agent.speed = chasingSpeed;
-
-        // Establecemos al jugador como el destino
-        agent.SetDestination(player.position);
+        isPatrolling = patrolling;
+        returnPatrol = patrolling; // Solo se activa al inicio del patrullaje
+        isChasing = chasing;
+        combat.isAttacking = attacking;
     }
 
+    #endregion
+
+    #region Patrolling
+
+    // Funciones durante estado de Patrullaje
     void Patrolling()
     {
-        // Solo ejecutamos cuando esté en estado de perseguir
+        // Solo ejecutamos cuando esté en estado de patrullar
         if (!isPatrolling) return;
 
-        // Establecemos la velocidad de persecución
+        // Activamos la rotación de NavMesh y se desactiva la manual
+        agent.updateRotation = true; 
+
+        // Establecemos la velocidad de patrullar
         agent.speed = patrolSpeed;
-        
+
+        // Calculamos distancia hacia el punto que debe alcanzar
         float distanceToPoint = Vector3.Distance(transform.position, patrolPoints[currentPatrolPoint].position);
 
+        // Si llega al punto, cambia al siguiente
         if (distanceToPoint <= pointReachThreshold)
         {
+            // Función para cambiar al siguiente punto de la lista de puntos 
             currentPatrolPoint = (currentPatrolPoint + 1) % patrolPoints.Count;
         }
 
@@ -121,10 +127,11 @@ public class EnemyMovement : MonoBehaviour
             returnPatrol = false;
         }
 
+        // Establecemos el punto objetivo
         Vector3 targetPoint = patrolPoints[currentPatrolPoint].position;
 
-        // Establecemos el punto de destino inicial
-        agent.SetDestination(targetPoint);
+        // Establecemos el jugador como Target
+        SetTarget(targetPoint);
     }
 
     // Función de búsqueda de punto de patrulla más cercano
@@ -152,34 +159,69 @@ public class EnemyMovement : MonoBehaviour
         return closestPoint;
     }
 
+    #endregion
+
+    #region PlayerInteraction
+
+    // Función de perseguir al jugador
+    void FollowPlayer()
+    {
+        // Solo ejecutamos cuando esté en estado de perseguir
+        if (!isChasing) return;
+
+        // Activamos la rotación de NavMesh y se desactiva la manual
+        agent.updateRotation = true;
+
+        // Establecemos la velocidad de persecución
+        agent.speed = chasingSpeed;
+
+        // Establecemos el jugador como Target
+        SetTarget(player.position);
+    }
+
+    // Funciones cuando el Player está en el area de ataque
     void InAttackArea()
     {
         // Solo ejecutamos en estado de ataque
         if (!combat.isAttacking) return;
 
+        // Desactivamos la rotación de NavMesh para activar la manual
+        agent.updateRotation = false;
+
         // Negamos la velocidad para que no avance, pero puede seguir girando para mirar hacia el Player
         agent.speed = 0;
 
-        // Establecemos al jugador como el destino
-        agent.SetDestination(player.position);
+        // Establecemos el jugador como Target
+        SetTarget(player.position);
     }
 
-    void LookAtPlayer()
-    {
-        // Si negamos la rotación no ejecutamos
-        if (combat.rotationLocked) return;
+    #endregion
 
-        // Calculamos la dirección hacia el jugador
-        Vector3 directionToPlayer = player.position - transform.position;
+    #region TargetSettings
+    // Se llama para establecer el objetivo del enemigo
+    void SetTarget(Vector3 newTarget)
+    {
+        target = newTarget;
+        agent.SetDestination(target);
+    }
+
+    // Mira hacia el Player cuando lo requiere
+    void LookAtTarget()
+    {
+        // Rotación manual hacia el target solo en estado de ataque y si no está negada
+        if (combat.rotationLocked || !combat.isAttacking) return;
+
+        // Calculamos la dirección hacia el objetivo
+        Vector3 directionToTarget = target - transform.position;
 
         // Mantener solo la dirección en el plano X-Z, eliminando cualquier inclinación en Y
-        directionToPlayer.y = 0;
+        directionToTarget.y = 0;
 
         // Si la dirección es válida (evitar errores al normalizar un vector cero)
-        if (directionToPlayer.sqrMagnitude > 0)
+        if (directionToTarget.sqrMagnitude > 0)
         {
             // Calculamos la rotación deseada solo en el eje Y
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+            Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
 
             // Suavizamos la rotación
             Quaternion smoothedRotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmooth * Time.deltaTime);
@@ -189,6 +231,7 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    #endregion
 
     #region Depuration
 
@@ -206,6 +249,13 @@ public class EnemyMovement : MonoBehaviour
         // Radio de pérdida
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, lostRadius);
+
+        // Radio de alcance de puntos de Patrulla
+        for (int currentPoint = 0; currentPoint < patrolPoints.Count; currentPoint++)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(patrolPoints[currentPoint].position, pointReachThreshold);
+        }
     }
 
     #endregion

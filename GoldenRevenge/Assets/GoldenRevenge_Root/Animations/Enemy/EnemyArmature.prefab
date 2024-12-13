@@ -274,6 +274,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5285833109662955890}
   - component: {fileID: 199185143368774857}
+  - component: {fileID: 7505485826242866129}
   m_Layer: 0
   m_Name: EnemyArmature
   m_TagString: Untagged
@@ -319,6 +320,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7505485826242866129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6120319392674096224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04cfd624b5ee07e45a298cafc1f72ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatScript: {fileID: 0}
 --- !u!1 &6399305887160185460
 GameObject:
   m_ObjectHideFlags: 0

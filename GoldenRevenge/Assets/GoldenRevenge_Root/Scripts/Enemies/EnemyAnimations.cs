@@ -31,7 +31,7 @@ public class EnemyAnimations : MonoBehaviour
     // Manejo de animaciones de movimiento
     void MoveAnimations()
     {
-        // Si estamos atacando no hay movimiento
+        // Si está atacando no hay movimiento
         if (combat.isAttacking)
         {
             return;

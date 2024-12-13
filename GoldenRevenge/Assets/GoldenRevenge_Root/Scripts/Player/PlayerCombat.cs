@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerCombat : MonoBehaviour
+public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz de eventos de animación
 {
-    [Header("Components")]
-    PlayerAnimations anim; // Script de control de animaciones
-
     [Header("External References")]
+    PlayerAnimations anim; // Script de control de animaciones
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del jugador
     [SerializeField] Transform weapon; // Posición del arma en el Rig
 
@@ -21,7 +19,7 @@ public class PlayerCombat : MonoBehaviour
     public bool isAttacking; // Estado de atacando
     public bool rotationLocked; // Negación de rotación
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    bool canNextAction; // Se permite o no acumular ataques al pulsar varias veces el input
+    bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     int currentAttack; // El ataque que se ejecutará, mandado por el input
     int attackNum; // El ataque que se está ejecutando, indicado por su animación
@@ -59,28 +57,17 @@ public class PlayerCombat : MonoBehaviour
         FollowWeapon();
     }
 
-    #region AttackManagement
+    #region HealthManagement
 
-    // Hacemos daño al enemigo mediante la colisión
-    public void InflictDamage(EnemyCombat enemy)
+    // Recibir daño
+    public void TakeDamage(int damageRecived)
     {
-        // Solo si se permite ejercer daño
-        if (canDealDamage)
-        {
-            // Evitamos ejercer daño más de una vez por ataque
-            canDealDamage = false;
-
-            // Seleccionamos el daño del ataque que se está ejecutando
-            int damage = comboDamages[attackNum - 1];
-
-            // El enemigo recibe daño
-            enemy.TakeDamage(damage);
-        }
+        
     }
 
     #endregion
 
-    #region ComboManagement
+    #region AttackManagement
 
     // Gestiona cual es el próximo ataque y lo ejecuta
     void Attack() 
@@ -128,6 +115,23 @@ public class PlayerCombat : MonoBehaviour
     public void AllowAttack()
     {
         canNextAction = true;
+    }
+
+    // Hacemos daño al enemigo mediante la colisión
+    public void InflictDamage(EnemyCombat enemy)
+    {
+        // Solo si se permite ejercer daño
+        if (canDealDamage)
+        {
+            // Evitamos ejercer daño más de una vez por ataque
+            canDealDamage = false;
+
+            // Seleccionamos el daño del ataque que se está ejecutando
+            int damage = comboDamages[attackNum - 1];
+
+            // El enemigo recibe daño
+            enemy.TakeDamage(damage);
+        }
     }
 
     #endregion
