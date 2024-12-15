@@ -48,7 +48,7 @@ public class WeaponCollision : MonoBehaviour
                 // Obtenemos la referencia del Script de combate
                 EnemyCombat combat = combatGeneric.GetComponent<EnemyCombat>();
 
-                // Ejercemos daño al Player
+                // Ejercemos daño al Jugador
                 combat.InflictDamage(target);
             }
         }

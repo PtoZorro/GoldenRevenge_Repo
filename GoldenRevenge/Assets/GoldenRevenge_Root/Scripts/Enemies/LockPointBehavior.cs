@@ -6,16 +6,16 @@ public class LockPointBehavior : MonoBehaviour
 {
     // En este script manejamos la altura del "punto de marcado del enemigo"
     // El punto de marcado es en el que la cámara se fijará automáticamente cuando fijemos un enemigo
-    // La altura del punto variará según lo cercano que esté el player del enemigo,
-    // ya que así ajustamos desde que ángulo se verá al enemigo según la distancia, para que el player no lo tape
+    // La altura del punto variará según lo cercano que esté el Jugador del enemigo,
+    // ya que así ajustamos desde que ángulo se verá al enemigo según la distancia, para que el Jugador no lo tape
 
     [Header("References")]
     Transform playerPos;
 
     [Header("Settings")]
     [SerializeField] float farPointHeight; // Altura del punto de marcado cuando el jugador está lejos 
-    [SerializeField] float riseHeight; // Altura que se suma a la variable anterior según el player se acerque
-    [SerializeField] float minDistance; // Distancia mínima del player al enemigo a la que el punto comienza a subir
+    [SerializeField] float riseHeight; // Altura que se suma a la variable anterior según el Jugador se acerque
+    [SerializeField] float minDistance; // Distancia mínima del Jugador al enemigo a la que el punto comienza a subir
     [SerializeField] float riseSpeed; // Velocidad a la que el punto se moverá
 
     void Start()
@@ -36,7 +36,7 @@ public class LockPointBehavior : MonoBehaviour
             // Esta función nos da un valor entre 0 (fuera de rango o en el punto más cercano) y 1 (justo al lado del jugador)
             float t = 1 - Mathf.Clamp01(distanceToPlayer / minDistance);
 
-            // Calculamos la nueva posición vertical del objeto interpolando entre la posición más baja y la más alta posible según t (cercania del player entre 0-1)
+            // Calculamos la nueva posición vertical del objeto interpolando entre la posición más baja y la más alta posible según t (cercania del Jugador entre 0-1)
             float newYPosition = Mathf.Lerp(farPointHeight, farPointHeight + riseHeight, t);
 
             // Subimos el objeto con una velocidad limitada

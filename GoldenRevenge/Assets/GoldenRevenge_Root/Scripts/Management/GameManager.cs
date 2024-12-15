@@ -6,6 +6,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("Player Stats")]
+    public int maxStamina; // Stamina máxima
+    public int maxHealth; // Salud máxima
+    public int health; // Salud del jugador
+    public int stamina; // Stamina del jugador
+
     void Awake()
     {
         // Asegura que solo exista una instancia
@@ -21,11 +27,19 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        
+        // Se establecen los valores del Player al inicio
+        PlayerInitialStates();
     }
 
     void Update()
     {
-        
+
+    }
+
+    void PlayerInitialStates()
+    {
+        // Valores iniciales
+        health = maxHealth;
+        stamina = maxStamina;
     }
 }

@@ -493,7 +493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponCollider: {fileID: 6132094541408019154}
   weapon: {fileID: 5865436143022380396}
-  comboDamages: 0f0000001100000014000000
+  comboDamages: 96000000af000000c8000000
   maxComboAttacks: 3
   attackRate: 0.5
   isAttacking: 0

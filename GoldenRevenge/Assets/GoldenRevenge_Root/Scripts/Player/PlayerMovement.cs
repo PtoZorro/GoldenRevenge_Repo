@@ -158,12 +158,27 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion
 
+    #region CombatMovementMechanics
+
+    void Roll()
+    {
+
+    }
+
+    #endregion
+
     #region InputReading
 
     // Lectura de input de movimiento
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
+    }
+
+    // Lectura de input de esquivar
+    public void OnRoll(InputAction.CallbackContext context)
+    {
+        Roll();
     }
 
     #endregion

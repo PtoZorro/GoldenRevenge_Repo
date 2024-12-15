@@ -13,7 +13,7 @@ public class AnimationEvents : MonoBehaviour
 
     private void Awake()
     {
-        // Almacenar en la variable el script seleccionado (Player o Enemigo) usando la interfaz especificada
+        // Almacenar en la variable el script seleccionado (Jugador o Enemigo) usando la interfaz especificada
         combat = combatScript as ICombatEvents;
     }
 

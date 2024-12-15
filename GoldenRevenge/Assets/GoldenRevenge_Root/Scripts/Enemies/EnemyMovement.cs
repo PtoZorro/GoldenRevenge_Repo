@@ -16,9 +16,9 @@ public class EnemyMovement : MonoBehaviour
     Transform player;
 
     [Header("Stats")]
-    [SerializeField] float chasingSpeed; // Velocidad a la que el enemigo persigue al Player
+    [SerializeField] float chasingSpeed; // Velocidad a la que el enemigo persigue al Jugador
     [SerializeField] float patrolSpeed; // Velocidad a la que el enemigo patrulla
-    [SerializeField] float rotationSmooth; // Suavizado de la rotación hacia el Player
+    [SerializeField] float rotationSmooth; // Suavizado de la rotación hacia el Jugador
     [SerializeField] float attackRadius; // Distancia a la cual el enemigo ataca al jugador
     [SerializeField] float detectRadius; // Distancia a la cual el enemigo detecta al jugador
     [SerializeField] float lostRadius; // Distancia a la cual el enemigo pierde de vista al jugador
@@ -58,7 +58,7 @@ public class EnemyMovement : MonoBehaviour
         // Funciones durante estado de Patrullaje
         Patrolling();
 
-        // Funciones cuando el Player está en el area de ataque
+        // Funciones cuando el Jugador está en el area de ataque
         InAttackArea();
     }
 
@@ -179,7 +179,7 @@ public class EnemyMovement : MonoBehaviour
         SetTarget(player.position);
     }
 
-    // Funciones cuando el Player está en el area de ataque
+    // Funciones cuando el Jugador está en el area de ataque
     void InAttackArea()
     {
         // Solo ejecutamos en estado de ataque
@@ -188,7 +188,7 @@ public class EnemyMovement : MonoBehaviour
         // Desactivamos la rotación de NavMesh para activar la manual
         agent.updateRotation = false;
 
-        // Negamos la velocidad para que no avance, pero puede seguir girando para mirar hacia el Player
+        // Negamos la velocidad para que no avance, pero puede seguir girando para mirar hacia el Jugador
         agent.speed = 0;
 
         // Establecemos el jugador como Target
@@ -205,7 +205,7 @@ public class EnemyMovement : MonoBehaviour
         agent.SetDestination(target);
     }
 
-    // Mira hacia el Player cuando lo requiere
+    // Mira hacia el Jugador cuando lo requiere
     void LookAtTarget()
     {
         // Rotación manual hacia el target solo en estado de ataque y si no está negada

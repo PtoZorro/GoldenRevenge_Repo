@@ -56,7 +56,7 @@ public class CameraBehaviour : MonoBehaviour
 
     void LateUpdate()
     {
-        // Seguimiento de la camara al Player
+        // Seguimiento de la camara al Jugador
         FollowPlayer();
 
         // Fijación de cámara hacia un enemigo
@@ -65,7 +65,7 @@ public class CameraBehaviour : MonoBehaviour
 
     # region CameraHandling
 
-    // Seguimiento de la camara al Player
+    // Seguimiento de la camara al Jugador
     void FollowPlayer()
     {
         // Desplazamos la cámara suavemente hacia la posición objetivo del jugador

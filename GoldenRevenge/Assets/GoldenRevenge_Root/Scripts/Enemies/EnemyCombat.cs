@@ -34,8 +34,8 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
     void Awake()
     {
         // Valores de inicio prioritarios
-        colliderInitialPos = transform.localPosition;
-        colliderInitialRot = transform.localRotation;
+        colliderInitialPos = weaponCollider.transform.localPosition;
+        colliderInitialRot = weaponCollider.transform.localRotation;
     }
 
     void Start()
@@ -62,6 +62,9 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
 
         // Gestión de ataques
         Attack();
+
+        // Mantener el collider siguiendo al arma en el Rig
+        FollowWeapon();
     }
 
     #region HealthManagement
@@ -140,7 +143,7 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
         canNextAction = true;
     }
 
-    // Hacemos daño al Player mediante la colisión
+    // Hacemos daño al Jugador mediante la colisión
     public void InflictDamage(PlayerCombat player)
     {
         // Solo si se permite ejercer daño
@@ -159,33 +162,17 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
 
     #endregion
 
-    #region GeneralAnimationEvents
-
-    // Permite pasar al siguiente estado llegado a punto de la animación
-    public void CanInterrupt()
-    {
-        canNextAction = true;
-    }
-
-    // Deshabilita la rotación en cierto punto de la animación
-    public void LockRotation()
-    {
-        rotationLocked = true;
-    }
-
-    #endregion
-
     #region WeaponHitboxManagement
 
     // Mantener el collider siguiendo al arma en el Rig
     void FollowWeapon()
     {
         // Seguirá al Rig solo cuando el collider está activo
-        if (colliderActive)
-        {
-            weaponCollider.transform.position = weapon.position;
-            weaponCollider.transform.rotation = weapon.rotation;
-        }
+        if (!colliderActive) return;
+
+        // Seguimiento del arma en el rig
+        weaponCollider.transform.position = weapon.position;
+        weaponCollider.transform.rotation = weapon.rotation;
     }
 
     // Habilitar el collider de las armas mediante la animación
@@ -204,6 +191,22 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
         // Lo llevamos al punto de inicio
         weaponCollider.transform.localPosition = colliderInitialPos;
         weaponCollider.transform.localRotation = colliderInitialRot;
+    }
+
+    #endregion
+
+    #region GeneralAnimationEvents
+
+    // Permite pasar al siguiente estado llegado a punto de la animación
+    public void CanInterrupt()
+    {
+        canNextAction = true;
+    }
+
+    // Deshabilita la rotación en cierto punto de la animación
+    public void LockRotation()
+    {
+        rotationLocked = true;
     }
 
     #endregion
