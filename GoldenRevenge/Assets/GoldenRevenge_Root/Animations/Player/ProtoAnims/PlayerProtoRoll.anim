@@ -1211,15 +1211,15 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.6666667
-    functionName: ManageRotation
-    data: unlock
+    functionName: ManageImpulse
+    data: off
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.6666667
-    functionName: ManageImpulse
-    data: off
+  - time: 0.8333333
+    functionName: ManageRotation
+    data: unlock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
