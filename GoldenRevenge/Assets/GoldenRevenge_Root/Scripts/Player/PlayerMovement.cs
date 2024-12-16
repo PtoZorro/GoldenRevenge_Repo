@@ -16,7 +16,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Stats")]
     [SerializeField] float speed; // Valor para controlar la velocidad
     [SerializeField] float rotationSmooth; // Suavizado de la rotación del personaje
+    [SerializeField] float rollSpeed; // Velocidad a la cual el jugador esquiva
     [SerializeField] float lockSpeed; // Velocidad a la cual el jugador apuntará hacia el enemigo
+
+    [Header("Conditional Values")]
+    bool isRolling; // Estado de esquivar
 
     [Header("Input values")]
     public Vector2 moveInput; // Input de movimiento
@@ -38,9 +42,14 @@ public class PlayerMovement : MonoBehaviour
         // Movimiento del personaje
         HandleMovement();
 
-        // Rotación del personaje en modo normal
-        if (!cam.camLocked) { HandleRotation(); }
-        else { FaceEnemy(); } // Mirar hacia el enemigo cuando lo hemos marcado
+        // Rotación del personaje 
+        HandleRotation();
+
+        // Mirar hacia el enemigo cuando lo hemos marcado
+        FaceEnemy(); 
+
+        // Esquive cuando el input lo marca
+        Roll();
     }
 
     #region MovementHandling
@@ -49,11 +58,7 @@ public class PlayerMovement : MonoBehaviour
     void CalculeDirection() 
     {
         // Si estamos atacando no hace falta calcular
-        if (combat.rotationLocked)
-        {
-            // No ejecutamos el método
-            return;
-        }
+        if (combat.rotationLocked) return;
 
         // Obtener la dirección hacia adelante y hacia la derecha de la cámara
         Vector3 forward = cameraPos.forward;
@@ -83,9 +88,11 @@ public class PlayerMovement : MonoBehaviour
             // Detenemos las fuerzas de movimiento residual
             rb.velocity = Vector3.zero;
             
-            // No ejecutamos el método
             return;
         }
+
+        // Si estamos esquivando no hay movimiento
+        if (isRolling) return;
 
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
@@ -109,9 +116,11 @@ public class PlayerMovement : MonoBehaviour
             // Detenemos la rotación residual
             rb.angularVelocity = Vector3.zero; 
 
-            // No ejecutamos el método
             return;
         }
+
+        // Si la cámara está bloqueada no ejecutamos
+        if (cam.camLocked || isRolling) return;
 
         if (moveInput != Vector2.zero)
         {
@@ -133,11 +142,8 @@ public class PlayerMovement : MonoBehaviour
     void FaceEnemy()
     {
         // Si estamos atacando no miramos siempre al enemigo
-        if (combat.rotationLocked)
-        {
-            // No ejecutamos el método
-            return;
-        }
+        // Solo ejecutamos si la cámara está fijada  
+        if (combat.rotationLocked || !cam.camLocked) return;
 
         // Calculamos la dirección hacia el enemigo
         Vector3 directionToEnemy = cam.enemyLocked.transform.position - transform.position;
@@ -162,7 +168,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Roll()
     {
+        // Solo se ejecuta si estamos en estado de Roll
+        if (!isRolling) return;
 
+        // Aplicamos fuerza en la dirección del input
+        rb.AddForce(desiredMoveDirection);
     }
 
     #endregion

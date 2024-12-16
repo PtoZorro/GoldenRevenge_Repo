@@ -23,12 +23,14 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject); // Persiste entre escenas
+
+        // Se establecen los valores del Player al inicio (¡¡¡Mover al Start!!!)
+        PlayerInitialStates();
     }
 
     void Start()
     {
-        // Se establecen los valores del Player al inicio
-        PlayerInitialStates();
+        
     }
 
     void Update()

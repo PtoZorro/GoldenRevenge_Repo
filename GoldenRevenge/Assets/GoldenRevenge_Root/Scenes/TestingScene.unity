@@ -132,8 +132,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
+      propertyPath: health
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: stamina
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
       propertyPath: maxHealth
-      value: 0
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
+        type: 3}
+      propertyPath: maxStamina
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 11623615659869375, guid: 7a28b6ea18ea84c43aa5545fb5eaf448,
         type: 3}
@@ -1156,8 +1171,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStamina: 1000
   maxHealth: 1000
-  health: 0
-  stamina: 0
+  health: 1000
+  stamina: 1000
 --- !u!1 &839360416
 GameObject:
   m_ObjectHideFlags: 0
