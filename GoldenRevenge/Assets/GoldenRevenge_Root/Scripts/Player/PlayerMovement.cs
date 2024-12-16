@@ -10,17 +10,18 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("References")]
     [SerializeField] CameraBehaviour cam; // Script de control de cámara
-    PlayerCombat combat; // Script de control de comabte
+    PlayerCombat combat; // Script de control de combate
     [SerializeField] Transform cameraPos; // Posición de la cámara
 
     [Header("Movement Stats")]
     [SerializeField] float speed; // Valor para controlar la velocidad
     [SerializeField] float rotationSmooth; // Suavizado de la rotación del personaje
-    [SerializeField] float rollSpeed; // Velocidad a la cual el jugador esquiva
+    [SerializeField] float rollForce; // Velocidad a la cual el jugador esquiva
+    [SerializeField] float rollSmooth; // Velocidad a la cual el jugador esquiva
     [SerializeField] float lockSpeed; // Velocidad a la cual el jugador apuntará hacia el enemigo
 
     [Header("Conditional Values")]
-    bool isRolling; // Estado de esquivar
+    bool initImpulse; // Indicador de impulso incial para el esquive
 
     [Header("Input values")]
     public Vector2 moveInput; // Input de movimiento
@@ -57,9 +58,6 @@ public class PlayerMovement : MonoBehaviour
     // Dirección a la que nos movemos y rotamos
     void CalculeDirection() 
     {
-        // Si estamos atacando no hace falta calcular
-        if (combat.rotationLocked) return;
-
         // Obtener la dirección hacia adelante y hacia la derecha de la cámara
         Vector3 forward = cameraPos.forward;
         Vector3 right = cameraPos.right;
@@ -92,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Si estamos esquivando no hay movimiento
-        if (isRolling) return;
+        if (combat.isRolling) return;
 
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
@@ -120,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Si la cámara está bloqueada no ejecutamos
-        if (cam.camLocked || isRolling) return;
+        if (cam.camLocked) return;
 
         if (moveInput != Vector2.zero)
         {
@@ -169,10 +167,34 @@ public class PlayerMovement : MonoBehaviour
     void Roll()
     {
         // Solo se ejecuta si estamos en estado de Roll
-        if (!isRolling) return;
+        if (!combat.isRolling || !combat.rollImpulse)
+        {
+            // Reiniciamos el indicador de impulso inicial
+            initImpulse = false;
 
-        // Aplicamos fuerza en la dirección del input
-        rb.AddForce(desiredMoveDirection);
+            return;
+        }
+
+        // Obtener la dirección hacia adelante basada en la orientación del personaje
+        Vector3 rollDirection = transform.forward;
+
+        // Si el jugador acaba de iniciar el roll, aplicar la fuerza inicial
+        if (!initImpulse)
+        {
+            rb.velocity = new Vector3(0, rb.velocity.y, 0); // Limpiar velocidad previa
+            rb.AddForce(rollDirection * rollForce, ForceMode.Impulse); // Impulso inicial
+            combat.rollImpulse = false; // Marcar que ya se aplicó el impulso
+
+            // Impulso inicial realizado
+            initImpulse = true;
+        }
+
+        // Reducir progresivamente la velocidad del roll
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 reducedVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, rollSmooth * Time.fixedDeltaTime);
+
+        // Aplicar la velocidad suavizada, manteniendo la componente Y para la gravedad
+        rb.velocity = new Vector3(reducedVelocity.x, currentVelocity.y, reducedVelocity.z);
     }
 
     #endregion
@@ -183,12 +205,6 @@ public class PlayerMovement : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
-    }
-
-    // Lectura de input de esquivar
-    public void OnRoll(InputAction.CallbackContext context)
-    {
-        Roll();
     }
 
     #endregion

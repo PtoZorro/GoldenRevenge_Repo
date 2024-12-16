@@ -1000,15 +1000,15 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: StartAttackAnimation
+    functionName: OnStartAttack
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
   - time: 0.5
-    functionName: LockRotation
-    data: 
+    functionName: ManageRotation
+    data: lock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -1035,9 +1035,16 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 1.25
-    functionName: EndAttackAnimation
-    data: 
+    functionName: OnEndAnimation
+    data: attack
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 3
+    intParameter: 1
+    messageOptions: 0
+  - time: 1.25
+    functionName: ManageRotation
+    data: unlock
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
     messageOptions: 0

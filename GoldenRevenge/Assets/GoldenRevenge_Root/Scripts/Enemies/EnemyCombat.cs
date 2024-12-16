@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static IAnimationEvents;
 
-public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz de eventos de animación
+public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents, IAttackEvents // Implementar interfaz de eventos de animación
 {
     [Header("References")]
     EnemyAnimations anim; // Script de control de animaciones
@@ -119,9 +120,6 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
 
         // Indicamos que número de ataque se está ejecutando
         attackNum = attackAnimNum;
-
-        // Permitimos rotación hasta que se ejecute parte del ataque
-        rotationLocked = false;
     }
 
     // El ataque que termine de reproducirse será el último del combo y llamará a la función
@@ -129,7 +127,6 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
     {
         // Se establecen parametros
         isAttacking = false;
-        rotationLocked = false;
         canNextAction = false;
         currentAttack = 0;
 
@@ -197,16 +194,33 @@ public class EnemyCombat : MonoBehaviour, ICombatEvents // Implementar interfaz 
 
     #region GeneralAnimationEvents
 
+    // Notifica el inicio de una animación específica
+    public void OnStartAnimation(string animName)
+    {
+        
+    }
+
+    // Notifica el fin de una animación específica
+    public void OnEndAnimation(string animName)
+    {
+        // Comprueba la animación que ha finalizado
+        switch (animName)
+        {
+            case "attack":
+                OnEndAttack(); break; // Fin de animación de ataque
+        }
+    }
+
     // Permite pasar al siguiente estado llegado a punto de la animación
     public void CanInterrupt()
     {
         canNextAction = true;
     }
 
-    // Deshabilita la rotación en cierto punto de la animación
-    public void LockRotation()
+    // Deshabilita o habilita la rotación 
+    public void ManageRotation(string lockState)
     {
-        rotationLocked = true;
+        rotationLocked = lockState == "lock" ? true : false;
     }
 
     #endregion

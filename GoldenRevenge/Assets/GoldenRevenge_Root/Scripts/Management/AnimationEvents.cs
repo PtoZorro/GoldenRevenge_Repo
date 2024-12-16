@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static IAnimationEvents;
 
 public class AnimationEvents : MonoBehaviour
 {
@@ -9,47 +10,71 @@ public class AnimationEvents : MonoBehaviour
 
     [Header("External References")]
     [SerializeField] MonoBehaviour combatScript; // Referencia genérica al script de combate
-    private ICombatEvents combat; // Referencia a la interfaz
+
+    // Interfaces
+    private IGeneralStatesEvents state; // Referencia a la interfaz de estados generales
+    private IAttackEvents attack; // Referencia a la interfaz de ataque
+    private IRollEvents roll; // Referencia a la interfaz de esquive
 
     private void Awake()
     {
         // Almacenar en la variable el script seleccionado (Jugador o Enemigo) usando la interfaz especificada
-        combat = combatScript as ICombatEvents;
+        state = combatScript as IGeneralStatesEvents;
+        attack = combatScript as IAttackEvents;
+        roll = combatScript as IRollEvents;
     }
 
-    // Notificar que ha comenzado la animación de ataque y avisar de que ataque se está ejecutando
-    void StartAttackAnimation(int attackNum) 
+    // Notificar que ha comenzado la animación y especificar cual es
+    void OnStartAnimation(string animName) 
     {
-        combat.OnStartAttack(attackNum);
+        state.OnStartAnimation(animName);
+    }
+
+    // Notificar que ha finalizado la animación y especificar cual es
+    void OnEndAnimation(string animName)
+    {
+        state.OnEndAnimation(animName);
+    }
+
+    // Deshabilita la rotación
+    void ManageRotation(string lockState)
+    {
+        state.ManageRotation(lockState);
+    }
+
+    // Permite leer el siguiente input en cierto punto de la animación
+    void CanInterrupt()
+    {
+        state.CanInterrupt();
+    }
+
+    // Notifica que ha empezado el ataque e indica su número
+    void OnStartAttack(int attackNum)
+    {
+        attack.OnStartAttack(attackNum);
     }
 
     // Habilitar el collider de las armas mediante la animación
     void EnableCollider() 
     {
-        combat.EnableCollider();
+        attack.EnableCollider();
     }
 
     // Deshabilitar el collider de las armas mediante la animación
     void DisableCollider() 
     {
-        combat.DisableCollider();
+        attack.DisableCollider();
     }
 
-    // Deshabilita la rotación en cierto punto de la animación
-    void LockRotation() 
+    // Habilitar y deshabilitar la Hitbox del jugador
+    void ManageHitBox(string state)
     {
-        combat.LockRotation();
+        roll.ManageHitBox(state);
     }
 
-    // Permite leer el siguiente input en cierto punto de la animación
-    void CanInterrupt() 
+    // Habilitar impulso del esquive
+    void ManageImpulse(string state)
     {
-        combat.CanInterrupt();
-    }
-
-    // Notificar que se ha acabado la animación de ataque
-    void EndAttackAnimation() 
-    {
-        combat.OnEndAttack();
+        roll.ManageImpulse(state);
     }
 }

@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static IAnimationEvents;
 
-public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz de eventos de animación
+public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents, IAttackEvents, IRollEvents // Implementar interfaz de eventos de animación
 {
     [Header("External References")]
-    [SerializeField] PlayerAnimations anim; // Script de control de animaciones
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del Jugador
     [SerializeField] Transform weapon; // Posición del arma en el Rig
+    PlayerAnimations anim; // Script de control de animaciones
 
     [Header("Core Stats")]
     [SerializeField] float recoverStamTime; // Tiempo en el que se comienza a recuperar stamina
@@ -26,7 +27,10 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
 
     [Header("States")]
     public bool isAttacking; // Estado de atacando
+    public bool isRolling; // Estado de esquivar
+    public bool rollImpulse; // Estado de impulso durante el esquive
     public bool rotationLocked; // Negación de rotación
+    bool isInvincible; // Estado de invencibilidad durante el esquive
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
     bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
@@ -106,6 +110,9 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
     // Recibir daño
     public void TakeDamage(int damageRecived)
     {
+        // En estado de invencivilidad no nos quitan salud
+        if (isInvincible) return;
+
         // Restamos daño especificado
         health -= damageRecived;
     }
@@ -200,9 +207,6 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
 
         // Indicamos que número de ataque se está ejecutando
         attackNum = attackAnimNum;
-
-        // Permitimos rotación hasta que se ejecute parte del ataque
-        rotationLocked = false; 
     }
 
     // El ataque que termine de reproducirse será el último del combo y llamará a la función
@@ -210,7 +214,6 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
     {
         // Se establecen parametros
         isAttacking = false; 
-        rotationLocked = false; 
         canNextAction = false;
         currentAttack = 0;
 
@@ -239,6 +242,47 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
             // El enemigo recibe daño
             enemy.TakeDamage(damage);
         }
+    }
+
+    #endregion
+
+    #region RollManagement
+
+    // Ejecutar Roll
+    void Roll()
+    {
+        if (!canNextAction) return;
+
+        // Estado de esquivar
+        isRolling = true;
+
+        // Negamos más acciones
+        canNextAction = false;
+
+        // Reproducimos la animación de roll
+        anim.RollAnimation();
+    }
+    
+    // Al final de la animación de esquivar, se desactiva el estado
+    void OnEndRoll()
+    {
+        isRolling = false;
+
+        CanInterrupt(); // Considerar mover
+    }
+
+    // Habilitar y deshabilitar la Hitbox del jugador
+    public void ManageHitBox(string state)
+    {
+        // El estado de invencibilidad dependerá de la actividad teórica de la Hitbox
+        isInvincible = state == "off" ? true : false;
+    }
+
+    // Habilitar o deshabilitar estado de impulso durante el esquive
+    public void ManageImpulse(string state)
+    {
+        rollImpulse = state == "on" ? true : false;
+        Debug.Log("impulse");
     }
 
     #endregion
@@ -278,16 +322,35 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
 
     #region GeneralAnimationEvents
 
+    // Notifica el inicio de una animación específica
+    public void OnStartAnimation(string animName)
+    {
+        
+    }
+
+    // Notifica el fin de una animación específica
+    public void OnEndAnimation(string animName)
+    {
+        // Comprueba la animación que ha finalizado
+        switch (animName)
+        {
+            case "attack":
+                OnEndAttack(); break; // Fin de animación de ataque
+            case "roll":
+                OnEndRoll(); break; // Inicio de esquive
+        }
+    }
+
     // Permite leer el siguiente input en cierto punto de la animación
     public void CanInterrupt() 
     {
         canNextAction = true;
     }
 
-    // Deshabilita la rotación en cierto punto de la animación
-    public void LockRotation() 
+    // Deshabilita o habilita la rotación 
+    public void ManageRotation(string lockState) 
     {
-        rotationLocked = true;
+        rotationLocked = lockState == "lock" ? true : false;
     }
 
     #endregion
@@ -316,11 +379,21 @@ public class PlayerCombat : MonoBehaviour, ICombatEvents // Implementar interfaz
 
     #region InputReading
 
-    public void OnAttack(InputAction.CallbackContext context) // Lectura de input de ataque
+    // Lectura de input de ataque
+    public void OnAttack(InputAction.CallbackContext context) 
     {
         if (context.started)
         {
             Attack();
+        }
+    }
+
+    // Lectura de input de esquivar
+    public void OnRoll(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Roll();
         }
     }
 

@@ -39,8 +39,8 @@ public class PlayerAnimations : MonoBehaviour
     // Manejo de animaciones de movimiento
     void MoveAnimations()
     {
-        // Si estamos atacando no hay movimiento
-        if (combat.isAttacking)
+        // Si estamos atacando o rodando no hay movimiento
+        if (combat.isAttacking || combat.isRolling)
         {
             return;
         }
@@ -111,6 +111,13 @@ public class PlayerAnimations : MonoBehaviour
     {
         // Activamos animación de ataque correspondiente a su número
         currentAnim = "attack" + attackNum;
+        UpdateAnimationState();
+    }
+
+    // Animación de roll en marcha
+    public void RollAnimation()
+    {
+        currentAnim = "roll";
         UpdateAnimationState();
     }
 

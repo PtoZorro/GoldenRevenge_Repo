@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManager Instance; // Instancia pública del Singleton
 
     [Header("Player Stats")]
     public int maxStamina; // Stamina máxima
