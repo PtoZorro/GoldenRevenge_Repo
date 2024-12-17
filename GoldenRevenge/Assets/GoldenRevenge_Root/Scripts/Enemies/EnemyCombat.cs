@@ -7,6 +7,7 @@ using static IAnimationEvents;
 public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents, IAttackEvents // Implementar interfaz de eventos de animación
 {
     [Header("References")]
+    EnemyMovement move; // Script de control de movimiento
     EnemyAnimations anim; // Script de control de animaciones
     [SerializeField] GameObject lockCamPoint; // Referencia al punto de fijado en cámara del enemigo
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del enemigo
@@ -21,12 +22,10 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
 
     [Header("Conditional Values")]
     public bool isAttacking; // Estado de atacando
-    public bool rotationLocked; // Negación de rotación
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
     bool canNextAction; // Se permite ejecutar la próxima acción
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     int currentAttack; // El ataque que se ejecutará, mandado por el input
-    int attackNum; // El ataque que se está ejecutando, indicado por su animación
 
     // Posiciones
     Vector3 colliderInitialPos;
@@ -42,15 +41,13 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
     void Start()
     {
         // Referencias
+        move = GetComponent<EnemyMovement>();
         anim = GetComponent<EnemyAnimations>();
 
         // Valores de inicio
         health = maxHealth;
-        isAttacking = false;
-        currentAttack = 0;
         canNextAction = true;
-        rotationLocked = false;
-        colliderActive = false;
+        currentAttack = 0;
 
         // En el inicio los colliders de armas empiezan apagados
         weaponCollider.SetActive(false);
@@ -96,30 +93,20 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
     // Gestiona cual es el próximo ataque y lo ejecuta
     void Attack()
     {
-        // Solo atacamos si estamos en el estado
-        if (!isAttacking) return;
+        // Solo accionamos si tenemos permiso de atacar y no ha terminado el combo
+        if (!isAttacking || !canNextAction || currentAttack >= maxComboAttacks) return;
 
-        // Solo accionamos si hay permiso de atacar y no ha terminado el combo
-        if (canNextAction && currentAttack < maxComboAttacks)
-        {
-            // Se establecen parametros
-            isAttacking = true;
-            canNextAction = false;
-            currentAttack++;
-
-            // Reproducimos la animación de ataque correspondiente
-            anim.AttackAnimations(currentAttack);
-        }
-    }
-
-    // Al comenzar la animación se establecen parametros
-    public void OnStartAttack(int attackAnimNum)
-    {
-        // Permitimos ejercer daño
+        // Puede hacer daño
         canDealDamage = true;
 
-        // Indicamos que número de ataque se está ejecutando
-        attackNum = attackAnimNum;
+        // Negamos más acciones
+        canNextAction = false;
+
+        // Indicamos el ataque que toca ejecutar
+        currentAttack++;
+
+        // Reproducimos la animación de ataque correspondiente
+        anim.AttackAnimations(currentAttack);
     }
 
     // El ataque que termine de reproducirse será el último del combo y llamará a la función
@@ -150,7 +137,7 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
             canDealDamage = false;
 
             // Seleccionamos el daño del ataque que se está ejecutando
-            int damage = comboDamages[attackNum - 1];
+            int damage = comboDamages[currentAttack - 1];
 
             // El enemigo recibe daño
             player.TakeDamage(damage);
@@ -194,10 +181,31 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
 
     #region GeneralAnimationEvents
 
-    // Notifica el inicio de una animación específica
-    public void OnStartAnimation(string animName)
+    // Deshabilita o habilita estados de movimiento 
+    public void ManageMovement(string lockState)
     {
-        
+        // Comprueba la animación que ha finalizado
+        switch (lockState)
+        {
+            case "moveLock":
+                move.moveLocked = true; // Bloquear movimiento
+                break;
+            case "moveUnlock":
+                move.moveLocked = false; // Desbloquear movimiento
+                break;
+            case "rotLock":
+                move.rotationLocked = true; // Bloquear rotación
+                break;
+            case "rotUnlock":
+                move.rotationLocked = false; // Desbloquear rotación
+                break;
+        }
+    }
+
+    // Permite leer el siguiente input en cierto punto de la animación
+    public void CanInterrupt()
+    {
+        canNextAction = true;
     }
 
     // Notifica el fin de una animación específica
@@ -209,18 +217,6 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
             case "attack":
                 OnEndAttack(); break; // Fin de animación de ataque
         }
-    }
-
-    // Permite pasar al siguiente estado llegado a punto de la animación
-    public void CanInterrupt()
-    {
-        canNextAction = true;
-    }
-
-    // Deshabilita o habilita la rotación 
-    public void ManageRotation(string lockState)
-    {
-        rotationLocked = lockState == "lock" ? true : false;
     }
 
     #endregion

@@ -28,10 +28,12 @@ public class EnemyMovement : MonoBehaviour
     public bool isChasing; // Estado de persecución del jugador
     public bool isPatrolling; // Estado de patrullar
     public bool returnPatrol; // Estado de volver a Patrullar
-    int currentPatrolPoint; // Punto que se setá persiguiendo actualmente
+    public bool moveLocked; // Negación del movimiento
+    public bool rotationLocked; // Negación de rotación
 
     // Posiciones
     Vector3 target;
+    int currentPatrolPoint; // Punto que se setá persiguiendo actualmente
 
     void Start()
     {
@@ -52,8 +54,8 @@ public class EnemyMovement : MonoBehaviour
         // Sigue al jugador cuando se dan las condiciones
         FollowPlayer();
 
-        // Mira hacia el Objetivo cuando lo requiere
-        LookAtTarget();
+        // Mira hacia el Jugador cuando lo requiere
+        LookAtPlayer();
 
         // Funciones durante estado de Patrullaje
         Patrolling();
@@ -94,6 +96,13 @@ public class EnemyMovement : MonoBehaviour
         combat.isAttacking = attacking;
     }
 
+    // Se llama para establecer el objetivo del enemigo
+    void SetTarget(Vector3 newTarget)
+    {
+        target = newTarget;
+        agent.SetDestination(target);
+    }
+
     #endregion
 
     #region Patrolling
@@ -101,8 +110,8 @@ public class EnemyMovement : MonoBehaviour
     // Funciones durante estado de Patrullaje
     void Patrolling()
     {
-        // Solo ejecutamos cuando esté en estado de patrullar
-        if (!isPatrolling) return;
+        // Solo ejecutamos cuando esté en estado de patrullar y se pueda mover
+        if (!isPatrolling || moveLocked) return;
 
         // Activamos la rotación de NavMesh y se desactiva la manual
         agent.updateRotation = true; 
@@ -166,8 +175,8 @@ public class EnemyMovement : MonoBehaviour
     // Función de perseguir al jugador
     void FollowPlayer()
     {
-        // Solo ejecutamos cuando esté en estado de perseguir y no esté atacando
-        if (!isChasing || combat.isAttacking) return;
+        // Solo ejecutamos cuando esté en estado de perseguir y se pueda mover
+        if (!isChasing || moveLocked) return;
 
         // Activamos la rotación de NavMesh y se desactiva la manual
         agent.updateRotation = true;
@@ -179,37 +188,11 @@ public class EnemyMovement : MonoBehaviour
         SetTarget(player.position);
     }
 
-    // Funciones cuando el Jugador está en el area de ataque
-    void InAttackArea()
-    {
-        // Solo ejecutamos en estado de ataque
-        if (!combat.isAttacking) return;
-
-        // Desactivamos la rotación de NavMesh para activar la manual
-        agent.updateRotation = false;
-
-        // Negamos la velocidad para que no avance, pero puede seguir girando para mirar hacia el Jugador
-        agent.speed = 0;
-
-        // Establecemos el jugador como Target
-        SetTarget(player.position);
-    }
-
-    #endregion
-
-    #region TargetSettings
-    // Se llama para establecer el objetivo del enemigo
-    void SetTarget(Vector3 newTarget)
-    {
-        target = newTarget;
-        agent.SetDestination(target);
-    }
-
     // Mira hacia el Jugador cuando lo requiere
-    void LookAtTarget()
+    void LookAtPlayer()
     {
         // Rotación manual hacia el target solo en estado de ataque y si no está negada
-        if (combat.rotationLocked) return;
+        if (rotationLocked) return;
 
         // Calculamos la dirección hacia el objetivo
         Vector3 directionToTarget = target - transform.position;
@@ -229,6 +212,22 @@ public class EnemyMovement : MonoBehaviour
             // Aplicamos la rotación suavizada
             transform.rotation = smoothedRotation;
         }
+    }
+
+    // Funciones cuando el Jugador está en el area de ataque
+    void InAttackArea()
+    {
+        // Solo ejecutamos en estado de ataque
+        if (!combat.isAttacking) return;
+
+        // Desactivamos la rotación de NavMesh para activar la manual
+        agent.updateRotation = false;
+
+        // Negamos la velocidad para que no avance, pero puede seguir girando para mirar hacia el Jugador
+        agent.speed = 0;
+
+        // Establecemos el jugador como Target
+        SetTarget(player.position);
     }
 
     #endregion
@@ -259,5 +258,4 @@ public class EnemyMovement : MonoBehaviour
     }
 
     #endregion
-
 }

@@ -26,22 +26,10 @@ public class AnimationEvents : MonoBehaviour
         heal = combatScript as IHealEvents;
     }
 
-    // Notificar que ha comenzado la animación y especificar cual es
-    void OnStartAnimation(string animName) 
-    {
-        state.OnStartAnimation(animName);
-    }
-
-    // Notificar que ha finalizado la animación y especificar cual es
-    void OnEndAnimation(string animName)
-    {
-        state.OnEndAnimation(animName);
-    }
-
     // Deshabilita la rotación
-    void ManageRotation(string lockState)
+    void ManageMovement(string lockState)
     {
-        state.ManageRotation(lockState);
+        state.ManageMovement(lockState);
     }
 
     // Permite leer el siguiente input en cierto punto de la animación
@@ -50,10 +38,10 @@ public class AnimationEvents : MonoBehaviour
         state.CanInterrupt();
     }
 
-    // Notifica que ha empezado el ataque e indica su número
-    void OnStartAttack(int attackNum)
+    // Notificar que ha finalizado la animación y especificar cual es
+    void OnEndAnimation(string animName)
     {
-        attack.OnStartAttack(attackNum);
+        state.OnEndAnimation(animName);
     }
 
     // Habilitar el collider de las armas mediante la animación

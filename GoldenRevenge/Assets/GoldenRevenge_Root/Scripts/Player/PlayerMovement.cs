@@ -22,6 +22,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float lockSpeed; // Velocidad a la cual el jugador apuntará hacia el enemigo
 
     [Header("Conditional Values")]
+    public bool moveLocked; // Negación del movimiento
+    public bool rotationLocked; // Negación de rotación
+    public bool markEnemyLocked; // Negación de encarar hacia enemigo
     bool initImpulse; // Indicador de impulso incial para el esquive
 
     [Header("Input values")]
@@ -81,18 +84,8 @@ public class PlayerMovement : MonoBehaviour
     // Movimiento del personaje
     void HandleMovement()
     {
-        // Si estamos atacando no hay movimiento
-        if (combat.isAttacking)
-        {
-            // Detenemos las fuerzas de movimiento residual
-            rb.velocity = Vector3.zero;
-            
-            return;
-        }
-
-        // Si estamos esquivando no hay movimiento
-        // Si estamos curándonos no hay movimiento
-        if (combat.isRolling || combat.isHealing) return;
+        // Si no se nos permite movernos
+        if (moveLocked) return;
 
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
@@ -110,17 +103,8 @@ public class PlayerMovement : MonoBehaviour
     // Rotación del personaje
     void HandleRotation()
     {
-        // Si estamos atacando no siempre podemos rotar
-        if (combat.rotationLocked)
-        {
-            // Detenemos la rotación residual
-            rb.angularVelocity = Vector3.zero; 
-
-            return;
-        }
-
-        // Si estamos curándonos no ejecutamos
-        if (combat.isHealing) return;
+        // Si no se nos permite rotar
+        if (rotationLocked) return;
 
         // Valor de la velocidad a la que rota el Jugador
         float smooth;
@@ -136,7 +120,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else smooth = rollRotationSmooth; // Velocidad de rotación al principio del esquive
         
-
         if (moveInput != Vector2.zero)
         {
             // Calcular la rotación hacia la dirección en la que queremos movernos
@@ -150,17 +133,27 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Detener las fuerzas de movimiento residual
+    void CancelResidualMove()
+    {
+        rb.velocity = Vector3.zero;
+    }
+    
+    // Detener las fuerzas de rotación residual
+    void CancelResidualRot()
+    {
+        rb.angularVelocity = Vector3.zero;
+    }
+
     #endregion
 
     #region Movement/EnemyInteraction
 
     void FaceEnemy()
     {
-        // Si estamos atacando no miramos siempre al enemigo
-        // Solo ejecutamos si la cámara está fijada
-        // Durante el esquive miramos hacia donde lo ejecutamos
-        // Si estamos curandonos no ejecutamos
-        if (!cam.camLocked || combat.rotationLocked || combat.isRolling || combat.isHealing) return;
+        // Solo encaramos al enemigo cuando lo hemos fijado
+        // Si no se nos permite encarar al enemigo no ejecutamos
+        if (!cam.camLocked || markEnemyLocked) return;
 
         // Calculamos la dirección hacia el enemigo
         Vector3 directionToEnemy = cam.enemyLocked.transform.position - transform.position;

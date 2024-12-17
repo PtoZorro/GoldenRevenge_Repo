@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     [Header("External References")]
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del Jugador
     [SerializeField] Transform weapon; // Posición del arma en el Rig
+    PlayerMovement move; // Script de control de movimiento
     PlayerAnimations anim; // Script de control de animaciones
 
     [Header("Core Stats")]
@@ -33,14 +34,12 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     public bool isRolling; // Estado de esquivar
     public bool isHealing; // Estado de curación
     public bool rollImpulse; // Estado de impulso durante el esquive
-    public bool rotationLocked; // Negación de rotación
     bool isInvincible; // Estado de invencibilidad durante el esquive
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
     bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     bool canRecovStam; // Permitir la recuperación de Stamina
     int currentAttack; // El ataque que se ejecutará, mandado por el input
-    int attackNum; // El ataque que se está ejecutando, indicado por su animación
 
     [Header("Initialization States")]
     bool isInitialized = false; // Indica que el Jugador se acaba de activar para recoger información inicial del Singleton
@@ -63,15 +62,13 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         SingletonUpdate();
 
         // Referencias
+        move = GetComponent<PlayerMovement>();
         anim = GetComponent<PlayerAnimations>();
 
         // Valores de inicio
         previousStamina = stamina;
-        isAttacking = false;
         currentAttack = 0;
         canNextAction = true;
-        rotationLocked = false;
-        colliderActive = false;
 
         // En el inicio los colliders de armas empiezan apagados
         weaponCollider.SetActive(false);
@@ -203,8 +200,9 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         // Solo ejecutamos si tenemos stamina suficiente
         if (stamina < attackStamCost) return;
 
-        // Estado de ataque
+        // Estado de ataque y poder hacer daño
         isAttacking = true;
+        canDealDamage = true;
 
         // Negamos más acciones
         canNextAction = false;
@@ -217,16 +215,6 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
         // Reproducimos la animación de ataque correspondiente
         anim.AttackAnimations(currentAttack);
-    }
-
-    // Al comenzar la animación se establecen parametros
-    public void OnStartAttack(int attackAnimNum) 
-    {
-        // Permitimos ejercer daño
-        canDealDamage = true;
-
-        // Indicamos que número de ataque se está ejecutando
-        attackNum = attackAnimNum;
     }
 
     // El ataque que termine de reproducirse será el último del combo y llamará a la función
@@ -257,7 +245,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             canDealDamage = false;
 
             // Seleccionamos el daño del ataque que se está ejecutando
-            int damage = comboDamages[attackNum - 1];
+            int damage = comboDamages[currentAttack - 1];
 
             // El enemigo recibe daño
             enemy.TakeDamage(damage);
@@ -310,7 +298,6 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     public void ManageImpulse(string state)
     {
         rollImpulse = state == "on" ? true : false;
-        Debug.Log("impulse");
     }
 
     #endregion
@@ -385,10 +372,37 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
     #region GeneralAnimationEvents
 
-    // Notifica el inicio de una animación específica
-    public void OnStartAnimation(string animName)
+    // Deshabilita o habilita estados de movimiento 
+    public void ManageMovement(string lockState)
     {
-        
+        // Comprueba la animación que ha finalizado
+        switch (lockState)
+        {
+            case "moveLock":
+                move.moveLocked = true; // Bloquear movimiento
+                break;
+            case "moveUnlock":
+                move.moveLocked = false; // Desbloquear movimiento
+                break;
+            case "rotLock":
+                move.rotationLocked = true; // Bloquear rotación
+                break;
+            case "rotUnlock":
+                move.rotationLocked = false; // Desbloquear rotación
+                break;
+            case "markLock":
+                move.markEnemyLocked = true; // Bloquear marcado enemigo
+                break;
+            case "markUnlock":
+                move.markEnemyLocked = false; // Desbloquear marcado enemigo
+                break;
+        }
+    }
+
+    // Permite leer el siguiente input en cierto punto de la animación
+    public void CanInterrupt()
+    {
+        canNextAction = true;
     }
 
     // Notifica el fin de una animación específica
@@ -404,18 +418,6 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             case "heal":
                 OnEndHeal(); break; // Inicio de esquive
         }
-    }
-
-    // Permite leer el siguiente input en cierto punto de la animación
-    public void CanInterrupt() 
-    {
-        canNextAction = true;
-    }
-
-    // Deshabilita o habilita la rotación 
-    public void ManageRotation(string lockState) 
-    {
-        rotationLocked = lockState == "lock" ? true : false;
     }
 
     #endregion
