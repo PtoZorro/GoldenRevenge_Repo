@@ -27,4 +27,10 @@ public interface IAnimationEvents
         void ManageHitBox(string state); // Método para habilitar y deshabilitar la Hitbox del jugador
         void ManageImpulse(string state); // Método para habilitar o deshabilitar el impulso del esquive
     }
+    
+    // Métodos relacionados con la curación
+    public interface IHealEvents
+    {
+        void RestoreHealth(); // Método para restablecer la salud
+    }
 }

@@ -920,6 +920,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 87e4db8a-1c98-4d56-a8c5-6de9f47f98ee
     m_ActionName: Gameplay/Roll[/Keyboard/space,/XInputControllerWindows/buttonEast]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11623615659869375}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: OnHeal
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a730d6b5-017a-4ebf-b3e7-80f3b507b561
+    m_ActionName: Gameplay/Heal[/Keyboard/r]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
@@ -941,6 +957,7 @@ MonoBehaviour:
   cameraPos: {fileID: 4835425308269792719}
   speed: 5
   rotationSmooth: 15
+  rollRotationSmooth: 30
   rollForce: 4
   rollSmooth: 5
   lockSpeed: 25
@@ -964,8 +981,12 @@ MonoBehaviour:
   maxComboAttacks: 3
   comboDamages: 96000000af000000c8000000
   attackRate: 0.5
+  healthRestored: 600
+  attackStamCost: 250
+  rollStamCost: 150
   isAttacking: 0
   isRolling: 0
+  isHealing: 0
   rollImpulse: 0
   rotationLocked: 0
 --- !u!114 &1179076425068999870

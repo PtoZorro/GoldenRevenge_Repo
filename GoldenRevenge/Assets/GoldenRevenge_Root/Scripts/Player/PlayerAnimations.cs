@@ -39,8 +39,8 @@ public class PlayerAnimations : MonoBehaviour
     // Manejo de animaciones de movimiento
     void MoveAnimations()
     {
-        // Si estamos atacando o rodando no hay movimiento
-        if (combat.isAttacking || combat.isRolling)
+        // Si estamos atacando, rodando o curándonos no hay movimiento (¡¡¡Cambiar con un estado general de interrupción!!!)
+        if (combat.isAttacking || combat.isRolling || combat.isHealing)
         {
             return;
         }
@@ -76,29 +76,28 @@ public class PlayerAnimations : MonoBehaviour
     // Interpretación del input como dirección hacia la que el personaje corre mediante animación con BlendTree
     void LockedMoveValues()
     {
-        if (currentAnim == "run")
+        if (currentAnim != "run") return;
+
+        // Input instantáneo del teclado
+        float targetXSpeed = move.moveInput.x;
+        float targetYSpeed = move.moveInput.y;
+
+        // Interpolación suave de la velocidad (De esta manera evitamos que no haya interpolación al no usar input analógico)
+        currentXSpeed = Mathf.Lerp(currentXSpeed, targetXSpeed, Time.deltaTime / smoothBlendMove);
+        currentYSpeed = Mathf.Lerp(currentYSpeed, targetYSpeed, Time.deltaTime / smoothBlendMove);
+
+        // Si la cámara no está fijada, solo trotamos hacia delante 
+        if (!cam.camLocked)
         {
-            // Input instantáneo del teclado
-            float targetXSpeed = move.moveInput.x;
-            float targetYSpeed = move.moveInput.y;
-
-            // Interpolación suave de la velocidad (De esta manera evitamos que no haya interpolación al no usar input analógico)
-            currentXSpeed = Mathf.Lerp(currentXSpeed, targetXSpeed, Time.deltaTime / smoothBlendMove);
-            currentYSpeed = Mathf.Lerp(currentYSpeed, targetYSpeed, Time.deltaTime / smoothBlendMove);
-
-            // Si la cámara no está fijada, solo trotamos hacia delante 
-            if (!cam.camLocked) 
-            {
-                // Aplicar la magnitud de input a las variables del animator
-                anim.SetFloat("XSpeed", 0);
-                anim.SetFloat("YSpeed", Mathf.Abs(currentYSpeed));
-            }
-            else // Si la cámara está fijada en enemigo, se contemplan el trote hacia los 4 lados
-            {
-                // Aplicar la magnitud de input a las variables del animator
-                anim.SetFloat("XSpeed", currentXSpeed);
-                anim.SetFloat("YSpeed", currentYSpeed);
-            }
+            // Aplicar la magnitud de input a las variables del animator
+            anim.SetFloat("XSpeed", 0);
+            anim.SetFloat("YSpeed", Mathf.Abs(currentYSpeed));
+        }
+        else // Si la cámara está fijada en enemigo, se contemplan el trote hacia los 4 lados
+        {
+            // Aplicar la magnitud de input a las variables del animator
+            anim.SetFloat("XSpeed", currentXSpeed);
+            anim.SetFloat("YSpeed", currentYSpeed);
         }
     }
 
@@ -118,6 +117,13 @@ public class PlayerAnimations : MonoBehaviour
     public void RollAnimation()
     {
         currentAnim = "roll";
+        UpdateAnimationState();
+    }    
+    
+    // Animación de curación en marcha
+    public void HealAnimation()
+    {
+        currentAnim = "heal";
         UpdateAnimationState();
     }
 

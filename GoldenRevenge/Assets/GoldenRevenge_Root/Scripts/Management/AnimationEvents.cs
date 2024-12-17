@@ -15,6 +15,7 @@ public class AnimationEvents : MonoBehaviour
     private IGeneralStatesEvents state; // Referencia a la interfaz de estados generales
     private IAttackEvents attack; // Referencia a la interfaz de ataque
     private IRollEvents roll; // Referencia a la interfaz de esquive
+    private IHealEvents heal; // Referencia a la interfaz de curación
 
     private void Awake()
     {
@@ -22,6 +23,7 @@ public class AnimationEvents : MonoBehaviour
         state = combatScript as IGeneralStatesEvents;
         attack = combatScript as IAttackEvents;
         roll = combatScript as IRollEvents;
+        heal = combatScript as IHealEvents;
     }
 
     // Notificar que ha comenzado la animación y especificar cual es
@@ -76,5 +78,11 @@ public class AnimationEvents : MonoBehaviour
     void ManageImpulse(string state)
     {
         roll.ManageImpulse(state);
+    }
+    
+    // Habilitar impulso del esquive
+    void RestoreHealth()
+    {
+        heal.RestoreHealth();
     }
 }

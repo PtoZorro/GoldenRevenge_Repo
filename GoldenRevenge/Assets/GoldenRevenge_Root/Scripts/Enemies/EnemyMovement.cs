@@ -166,8 +166,8 @@ public class EnemyMovement : MonoBehaviour
     // Función de perseguir al jugador
     void FollowPlayer()
     {
-        // Solo ejecutamos cuando esté en estado de perseguir
-        if (!isChasing) return;
+        // Solo ejecutamos cuando esté en estado de perseguir y no esté atacando
+        if (!isChasing || combat.isAttacking) return;
 
         // Activamos la rotación de NavMesh y se desactiva la manual
         agent.updateRotation = true;
@@ -209,7 +209,7 @@ public class EnemyMovement : MonoBehaviour
     void LookAtTarget()
     {
         // Rotación manual hacia el target solo en estado de ataque y si no está negada
-        if (combat.rotationLocked || !combat.isAttacking) return;
+        if (combat.rotationLocked) return;
 
         // Calculamos la dirección hacia el objetivo
         Vector3 directionToTarget = target - transform.position;

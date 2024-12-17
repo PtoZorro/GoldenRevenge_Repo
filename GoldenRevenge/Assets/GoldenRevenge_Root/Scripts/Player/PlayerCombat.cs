@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static IAnimationEvents;
 
-public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents, IAttackEvents, IRollEvents // Implementar interfaz de eventos de animación
+public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents, IAttackEvents, IRollEvents, IHealEvents // Implementar interfaz de eventos de animación
 {
     [Header("External References")]
     [SerializeField] GameObject weaponCollider; // Hitbox del arma del Jugador
@@ -24,10 +24,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     [SerializeField] int maxComboAttacks; // Número máximo de ataques en un mismo combo
     [SerializeField] int[] comboDamages; // Daños para cada ataque del combo
     [SerializeField] float attackRate; // Tiempo en que se nos permite accionar otro combo de ataques
+    [SerializeField] int healthRestored; // Cantidad de salud restablecida al curarse
+    [SerializeField] int attackStamCost; // Coste de stamina al realizar un ataque
+    [SerializeField] int rollStamCost; // Coste de stamina al realizar un esquive
 
     [Header("States")]
     public bool isAttacking; // Estado de atacando
     public bool isRolling; // Estado de esquivar
+    public bool isHealing; // Estado de curación
     public bool rollImpulse; // Estado de impulso durante el esquive
     public bool rotationLocked; // Negación de rotación
     bool isInvincible; // Estado de invencibilidad durante el esquive
@@ -179,6 +183,13 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         canRecovStam = true;
     }
 
+    // Consumir stamina según la acción
+    public void ConsumeStamina(int stamConsumed)
+    {
+        // Restamos daño especificado
+        stamina -= stamConsumed;
+    }
+
     #endregion
 
     #region AttackManagement
@@ -187,16 +198,25 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     void Attack() 
     {
         // Solo accionamos si tenemos permiso de atacar y no ha terminado el combo
-        if (canNextAction && currentAttack < maxComboAttacks)
-        {
-            // Se establecen parametros
-            isAttacking = true;
-            canNextAction = false;
-            currentAttack++;
+        if (!canNextAction || currentAttack >= maxComboAttacks) return;
 
-            // Reproducimos la animación de ataque correspondiente
-            anim.AttackAnimations(currentAttack);
-        }
+        // Solo ejecutamos si tenemos stamina suficiente
+        if (stamina < attackStamCost) return;
+
+        // Estado de ataque
+        isAttacking = true;
+
+        // Negamos más acciones
+        canNextAction = false;
+
+        // Indicamos el ataque que toca ejecutar
+        currentAttack++;
+
+        // Consumo de stamina
+        ConsumeStamina(attackStamCost);
+
+        // Reproducimos la animación de ataque correspondiente
+        anim.AttackAnimations(currentAttack);
     }
 
     // Al comenzar la animación se establecen parametros
@@ -248,10 +268,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
     #region RollManagement
 
-    // Ejecutar Roll
+    // Ejecutar Esquive
     void Roll()
     {
+        // Solo ejecutamos si tenemos permiso
         if (!canNextAction) return;
+        
+        // Solo ejecutamos si tenemos stamina suficiente
+        if (stamina < rollStamCost) return;
 
         // Estado de esquivar
         isRolling = true;
@@ -259,13 +283,17 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         // Negamos más acciones
         canNextAction = false;
 
-        // Reproducimos la animación de roll
+        // Consumo de stamina
+        ConsumeStamina(rollStamCost);
+
+        // Reproducimos la animación de esquivar
         anim.RollAnimation();
     }
     
-    // Al final de la animación de esquivar, se desactiva el estado
+    // Al final de la animación de esquivar
     void OnEndRoll()
     {
+        // Estado de esquivar apagado
         isRolling = false;
 
         CanInterrupt(); // Considerar mover
@@ -283,6 +311,41 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     {
         rollImpulse = state == "on" ? true : false;
         Debug.Log("impulse");
+    }
+
+    #endregion
+
+    #region HealManagement
+
+    // Ejecutar curación
+    void Heal()
+    {
+        // Solo ejecutamos si tenemos permiso
+        if (!canNextAction) return;
+
+        // Estado de curación
+        isHealing = true;
+
+        // Negamos más acciones
+        canNextAction = false;
+
+        // Reproducimos la animación de curación
+        anim.HealAnimation();
+    }
+
+    // Restablecer la salud
+    public void RestoreHealth()
+    {
+        health += healthRestored;
+    }
+
+    // Al acabar la animación de Curación
+    void OnEndHeal()
+    {
+        // Estado de curación apagado
+        isHealing = false;
+
+        CanInterrupt(); // Considerar mover
     }
 
     #endregion
@@ -338,6 +401,8 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
                 OnEndAttack(); break; // Fin de animación de ataque
             case "roll":
                 OnEndRoll(); break; // Inicio de esquive
+            case "heal":
+                OnEndHeal(); break; // Inicio de esquive
         }
     }
 
@@ -394,6 +459,15 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         if (context.started)
         {
             Roll();
+        }
+    }
+
+    // Lectura de input de curación
+    public void OnHeal(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Heal();
         }
     }
 

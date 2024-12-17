@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement Stats")]
     [SerializeField] float speed; // Valor para controlar la velocidad
     [SerializeField] float rotationSmooth; // Suavizado de la rotación del personaje
+    [SerializeField] float rollRotationSmooth; // Suavizado de la rotación del personaje al inicio del esquive
     [SerializeField] float rollForce; // Velocidad a la cual el jugador esquiva
     [SerializeField] float rollSmooth; // Velocidad a la cual el jugador esquiva
     [SerializeField] float lockSpeed; // Velocidad a la cual el jugador apuntará hacia el enemigo
@@ -90,7 +91,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Si estamos esquivando no hay movimiento
-        if (combat.isRolling) return;
+        // Si estamos curándonos no hay movimiento
+        if (combat.isRolling || combat.isHealing) return;
 
         // Calculamos la magnitud del input para ajustar la velocidad según la intensidad del joystick
         float inputMagnitude = inputFixed.magnitude;
@@ -117,8 +119,23 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Si la cámara está bloqueada no ejecutamos
-        if (cam.camLocked) return;
+        // Si estamos curándonos no ejecutamos
+        if (combat.isHealing) return;
+
+        // Valor de la velocidad a la que rota el Jugador
+        float smooth;
+
+        // Aun que la cámara esté bloqueada, el esquive se hace hacia cualquier dirección y se rota a una velocidad distinta
+        if (!combat.isRolling)
+        {
+            //Si la cámara está bloqueada no ejecutamos, a no ser que que estemos esquivando
+            if (cam.camLocked) return;
+
+            // Velocidad de rotación normal
+            smooth = rotationSmooth;
+        }
+        else smooth = rollRotationSmooth; // Velocidad de rotación al principio del esquive
+        
 
         if (moveInput != Vector2.zero)
         {
@@ -126,7 +143,7 @@ public class PlayerMovement : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(desiredMoveDirection);
 
             // Interpola suavemente hacia la rotación deseada usando Slerp para una rotación más suave
-            Quaternion smoothedRotation = Quaternion.Slerp(rb.rotation, targetRotation, rotationSmooth * Time.fixedDeltaTime);
+            Quaternion smoothedRotation = Quaternion.Slerp(rb.rotation, targetRotation, smooth * Time.fixedDeltaTime);
 
             // Aplica la rotación al Rigidbody
             rb.MoveRotation(smoothedRotation);
@@ -140,8 +157,10 @@ public class PlayerMovement : MonoBehaviour
     void FaceEnemy()
     {
         // Si estamos atacando no miramos siempre al enemigo
-        // Solo ejecutamos si la cámara está fijada  
-        if (combat.rotationLocked || !cam.camLocked) return;
+        // Solo ejecutamos si la cámara está fijada
+        // Durante el esquive miramos hacia donde lo ejecutamos
+        // Si estamos curandonos no ejecutamos
+        if (!cam.camLocked || combat.rotationLocked || combat.isRolling || combat.isHealing) return;
 
         // Calculamos la dirección hacia el enemigo
         Vector3 directionToEnemy = cam.enemyLocked.transform.position - transform.position;
