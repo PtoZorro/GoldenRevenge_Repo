@@ -134,13 +134,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Detener las fuerzas de movimiento residual
-    void CancelResidualMove()
+    public void CancelResidualMove()
     {
         rb.velocity = Vector3.zero;
     }
     
     // Detener las fuerzas de rotación residual
-    void CancelResidualRot()
+    public void CancelResidualRot()
     {
         rb.angularVelocity = Vector3.zero;
     }
