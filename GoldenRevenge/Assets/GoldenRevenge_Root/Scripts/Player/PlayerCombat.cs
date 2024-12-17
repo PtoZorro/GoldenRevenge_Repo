@@ -213,6 +213,9 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         // Consumo de stamina
         ConsumeStamina(attackStamCost);
 
+        // Se cancelan fuerzas residuales de rb al limitar el movimiento
+        move.CancelResidualMove();
+
         // Reproducimos la animación de ataque correspondiente
         anim.AttackAnimations(currentAttack);
     }
@@ -315,6 +318,10 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
         // Negamos más acciones
         canNextAction = false;
+
+        // Se cancelan fuerzas residuales de rb al limitar el movimiento
+        move.CancelResidualMove();
+        move.CancelResidualRot();
 
         // Reproducimos la animación de curación
         anim.HealAnimation();
