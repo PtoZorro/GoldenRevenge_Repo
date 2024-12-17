@@ -16,19 +16,17 @@ public class CameraCollision : MonoBehaviour
     [SerializeField] float cornerOffsetX; // Desfase en el eje X para las esquinas
     [SerializeField] float cornerOffsetY; // Desfase en el eje Y para las esquinas
 
-    // Posiciones/Distancias globales
-    Vector3 cameraDir; // Dirección inicial de la cámara
-    float currentDistance; // Distancia actual de la cámara
+    private Vector3 cameraDir; // Dirección inicial de la cámara
+    private float currentDistance; // Distancia actual de la cámara
 
     // Variables para detectar input
     Vector2 lookInput; // Input de cámara
     Vector2 moveInput; // Input de movimiento
 
-    void Start()
+    void Awake()
     {
-        // Valores de inicio
-        cameraDir = transform.localPosition.normalized;
-        currentDistance = maxDistance;
+        cameraDir = transform.localPosition.normalized; // Dirección inicial normalizada
+        currentDistance = maxDistance; // La cámara empieza en la distancia máxima
     }
 
     void LateUpdate()
@@ -36,12 +34,11 @@ public class CameraCollision : MonoBehaviour
         // Solo detectamos colisiones cuando leemos input de movimiento o cámara con tal de optimizar
         if (lookInput != Vector2.zero || moveInput != Vector2.zero)
         {
-            // Detectar colisiones de obstáculos entre cámara y jugador
+            // Detectar colisiones entre cámara y personaje
             DetectCollisions();
         }
     }
 
-    // Detectar colisiones de obstáculos entre cámara y jugador
     void DetectCollisions()
     {
         // Inicializar la distancia actual
@@ -85,21 +82,19 @@ public class CameraCollision : MonoBehaviour
         transform.localPosition = Vector3.Lerp(transform.localPosition, finalPosition, smooth * Time.deltaTime);
     }
 
-    #region InputReading
-
-    // Lectura input de cámara
-    public void OnLook(InputAction.CallbackContext context) 
+    // Método del Input System para recibir el movimiento de la cámara
+    public void OnLook(InputAction.CallbackContext context)
     {
+        // Leer input de cámara
         lookInput = context.ReadValue<Vector2>();
     }
 
-    // Lectura input de movimiento
-    public void OnMove(InputAction.CallbackContext context) 
+    // Método del Input System para recibir el movimiento del personaje
+    public void OnMove(InputAction.CallbackContext context)
     {
+        // Lectura de input de movimiento
         moveInput = context.ReadValue<Vector2>();
     }
-
-    #endregion
 }
 
 
