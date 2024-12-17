@@ -103,6 +103,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_Ventana_Arriba
       objectReference: {fileID: 0}
+    - target: {fileID: 4321514657177891973, guid: dd057c55350c9dd45bbab07cad604e40,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9f28a7712626c2d4e90245d1f74fd68e, type: 2}
     - target: {fileID: 6745302439343835087, guid: dd057c55350c9dd45bbab07cad604e40,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
