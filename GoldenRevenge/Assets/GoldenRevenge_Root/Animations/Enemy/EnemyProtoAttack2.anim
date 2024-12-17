@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PlayerProtoAttack1
+  m_Name: EnemyProtoAttack2
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -1013,13 +1013,6 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0
-    functionName: ManageMovement
-    data: markUnlock
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.48333332
     functionName: ManageMovement
     data: rotLock
@@ -1027,22 +1020,8 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.48333332
-    functionName: ManageMovement
-    data: markLock
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.5
     functionName: EnableCollider
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.78333336
-    functionName: CanInterrupt
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -1055,9 +1034,9 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.2333333
-    functionName: ManageMovement
-    data: moveUnlock
+  - time: 0.81666666
+    functionName: CanInterrupt
+    data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -1071,7 +1050,7 @@ AnimationClip:
     messageOptions: 0
   - time: 1.2333333
     functionName: ManageMovement
-    data: markUnlock
+    data: moveUnlock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
