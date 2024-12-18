@@ -43,7 +43,7 @@ public class EnemyMovement : MonoBehaviour
         player = GameObject.Find("Player")?.transform;
 
         // Valores de inicio
-        ChangeStates(true, false, false); // Comienza Patrullando
+        SetStates(true, false, false); // Comienza Patrullando
     }
 
     void Update()
@@ -75,20 +75,20 @@ public class EnemyMovement : MonoBehaviour
         // Si el jugador no está en el area de detección
         if (distanceToPlayer >= lostRadius && !isPatrolling)
         {
-            ChangeStates(true, false, false); // Patrullando
+            SetStates(true, false, false); // Patrullando
         }
         else if (distanceToPlayer <= detectRadius && distanceToPlayer > attackRadius) // Si el jugador está en el area de detección
         {
-            ChangeStates(false, true, false); // Persiguiendo
+            SetStates(false, true, false); // Persiguiendo
         }
         else if (distanceToPlayer <= attackRadius) // Si el jugador está en el area de ataque
         {
-            ChangeStates(false, false, true); // Atacando
+            SetStates(false, false, true); // Atacando
         }
     }
 
     // Cambio de comportamiento del enemigo
-    void ChangeStates(bool patrolling, bool chasing, bool attacking)
+    void SetStates(bool patrolling, bool chasing, bool attacking)
     {
         isPatrolling = patrolling;
         returnPatrol = patrolling; // Solo se activa al inicio del patrullaje

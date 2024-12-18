@@ -36,7 +36,8 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     public bool rollImpulse; // Estado de impulso durante el esquive
     bool isInvincible; // Estado de invencibilidad durante el esquive
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
+    [SerializeField] bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
+    [SerializeField] bool canAttack; // Se permite ejecutar ataque de nuevo al terminar el combo
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     bool canRecovStam; // Permitir la recuperación de Stamina
     int currentAttack; // El ataque que se ejecutará, mandado por el input
@@ -69,6 +70,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         previousStamina = stamina;
         currentAttack = 0;
         canNextAction = true;
+        canAttack = true;
 
         // En el inicio los colliders de armas empiezan apagados
         weaponCollider.SetActive(false);
@@ -79,6 +81,9 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
     void Update()
     {
+        // Stamina infinita para debug
+        //stamina = maxStamina;
+
         // Mantener el collider siguiendo al arma en el Rig
         FollowWeapon();
 
@@ -195,26 +200,26 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     void Attack() 
     {
         // Solo accionamos si tenemos permiso de atacar y no ha terminado el combo
-        if (!canNextAction || currentAttack >= maxComboAttacks) return;
+        if (!canNextAction || !canAttack || currentAttack >= maxComboAttacks) return;
 
         // Solo ejecutamos si tenemos stamina suficiente
         if (stamina < attackStamCost) return;
 
-        // Estado de ataque y poder hacer daño
-        isAttacking = true;
+        // Actualizamos estados
+        SetStates(true, false, false);
+
+        // Permitomos al arma ejercer daño
         canDealDamage = true;
 
         // Negamos más acciones
-        canNextAction = false;
+        CanInterrupt("can't");
+        canAttack = false;
 
         // Indicamos el ataque que toca ejecutar
         currentAttack++;
 
         // Consumo de stamina
         ConsumeStamina(attackStamCost);
-
-        // Cancelar fuerzas residuales del rb al realizar paradas
-        move.CancelResidualMove();
 
         // Reproducimos la animación de ataque correspondiente
         anim.AttackAnimations(currentAttack);
@@ -223,9 +228,13 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // El ataque que termine de reproducirse será el último del combo y llamará a la función
     public void OnEndAttack() 
     {
-        // Se establecen parametros
-        isAttacking = false; 
-        canNextAction = false;
+        // Estado de ataque apagado
+        isAttacking = false;
+
+        // Permitimos más acciones
+        CanInterrupt("can");
+
+        // Reseteamos contador de ataques
         currentAttack = 0;
 
         // Pasado un tiempo configurable se podrá iniciar otro ataque
@@ -235,7 +244,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // Nos permite volver a iniciar un combo pasado un timepo "attackRate"
     public void AllowAttack()
     {
-        canNextAction = true;
+        canAttack = true;
     }
 
     // Hacemos daño al enemigo mediante la colisión
@@ -268,8 +277,8 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         // Solo ejecutamos si tenemos stamina suficiente
         if (stamina < rollStamCost) return;
 
-        // Estado de esquivar
-        isRolling = true;
+        // Actualizamos estados
+        SetStates(false, true, false);
 
         // Negamos más acciones
         canNextAction = false;
@@ -286,8 +295,6 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     {
         // Estado de esquivar apagado
         isRolling = false;
-
-        CanInterrupt(); // Considerar mover
     }
 
     // Habilitar y deshabilitar la Hitbox del jugador
@@ -313,8 +320,8 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         // Solo ejecutamos si tenemos permiso
         if (!canNextAction) return;
 
-        // Estado de curación
-        isHealing = true;
+        // Actualizamos estados
+        SetStates(false, false, true);
 
         // Negamos más acciones
         canNextAction = false;
@@ -338,8 +345,6 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     {
         // Estado de curación apagado
         isHealing = false;
-
-        CanInterrupt(); // Considerar mover
     }
 
     #endregion
@@ -377,6 +382,21 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
     #endregion
 
+    #region GeneralStatesManagment
+
+    // Gestion de estados generales (Evita errores por interrupciones)
+    void SetStates(bool attacking, bool rolling, bool healing)
+    {
+        isAttacking = attacking;
+        isRolling = rolling;
+        isHealing = healing;
+
+        // Reseteo de ataques de combo
+        if (!attacking) currentAttack = 0;
+    }
+
+    #endregion
+
     #region GeneralAnimationEvents
 
     // Deshabilita o habilita estados de movimiento 
@@ -387,12 +407,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         {
             case "moveLock":
                 move.moveLocked = true; // Bloquear movimiento
+                move.CancelResidualMove(); // Cancelar fuerzas residuales del rb al realizar paradas
                 break;
             case "moveUnlock":
                 move.moveLocked = false; // Desbloquear movimiento
                 break;
             case "rotLock":
                 move.rotationLocked = true; // Bloquear rotación
+                move.CancelResidualRot(); // Cancelar fuerzas residuales del rb al realizar paradas
                 break;
             case "rotUnlock":
                 move.rotationLocked = false; // Desbloquear rotación
@@ -407,9 +429,12 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     }
 
     // Permite leer el siguiente input en cierto punto de la animación
-    public void CanInterrupt()
+    public void CanInterrupt(string canInterrupt)
     {
-        canNextAction = true;
+        canNextAction = canInterrupt == "can" ? true : false;
+
+        // También gestionamos poder atacar
+        canAttack = canInterrupt == "can" ? true : false;
     }
 
     // Notifica el fin de una animación específica

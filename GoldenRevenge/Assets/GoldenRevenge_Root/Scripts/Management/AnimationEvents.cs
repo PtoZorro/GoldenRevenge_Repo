@@ -33,15 +33,21 @@ public class AnimationEvents : MonoBehaviour
     }
 
     // Permite leer el siguiente input en cierto punto de la animación
-    void CanInterrupt()
+    void CanInterrupt(string canInterrupt)
     {
-        state.CanInterrupt();
+        state.CanInterrupt(canInterrupt);
     }
 
     // Notificar que ha finalizado la animación y especificar cual es
     void OnEndAnimation(string animName)
     {
         state.OnEndAnimation(animName);
+    }
+
+    // Permite comenzar el siguiente combo de ataque
+    void AllowAttack()
+    {
+        attack.AllowAttack();
     }
 
     // Habilitar el collider de las armas mediante la animación
