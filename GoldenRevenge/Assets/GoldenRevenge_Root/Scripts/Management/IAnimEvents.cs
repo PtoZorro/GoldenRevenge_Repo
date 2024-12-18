@@ -8,13 +8,14 @@ public interface IAnimationEvents
     public interface IGeneralStatesEvents
     {
         void ManageMovement(string lockState); // Método para bloquear y desbloquear estados de movimiento, rotación y fijado de objetivos
-        void CanInterrupt(); // Método para permitir interrupción
+        void CanInterrupt(string canInterrupt); // Método para permitir interrupción
         void OnEndAnimation(string animName); // Método para notificar el fin de una animación
     }
 
     // Métodos relacionados con el ataque
     public interface IAttackEvents
     {
+        void AllowAttack(); // Método para permitir atacar
         void EnableCollider(); // Método para habilitar el collider del arma
         void DisableCollider(); // Método para deshabilitar el collider del arma
     }

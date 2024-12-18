@@ -100,7 +100,7 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
         canDealDamage = true;
 
         // Negamos más acciones
-        canNextAction = false;
+        CanInterrupt("can't");
 
         // Indicamos el ataque que toca ejecutar
         currentAttack++;
@@ -203,9 +203,9 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
     }
 
     // Permite leer el siguiente input en cierto punto de la animación
-    public void CanInterrupt()
+    public void CanInterrupt(string canInterrupt)
     {
-        canNextAction = true;
+        canNextAction = canInterrupt == "can" ? true : false;
     }
 
     // Notifica el fin de una animación específica

@@ -30,12 +30,13 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        
+        // Realentizar tiempo para debug
+        //Time.timeScale = 0.4f;
     }
 
     void Update()
     {
-
+        
     }
 
     void PlayerInitialStates()
