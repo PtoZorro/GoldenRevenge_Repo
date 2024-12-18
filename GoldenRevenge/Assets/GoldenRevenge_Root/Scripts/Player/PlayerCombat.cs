@@ -17,9 +17,10 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     [SerializeField] float increaseStamSpeed; // Velocidad de recuperación de stamina
     int maxHealth; // Salud máxima
     int maxStamina; // Stamina máxima
+    int maxHealItems; // Número máximo de curativos
     int health; // Salud del Jugador
     int stamina; // Stamina del Jugador
-    int previousStamina; // Detección de decrementos de stamina
+    int healItems; // Número de curativos
 
     [Header("Combat Settings")]
     [SerializeField] int maxComboAttacks; // Número máximo de ataques en un mismo combo
@@ -35,12 +36,16 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     public bool isHealing; // Estado de curación
     public bool rollImpulse; // Estado de impulso durante el esquive
     bool isInvincible; // Estado de invencibilidad durante el esquive
+    bool isDead; // Estado de muerte
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    [SerializeField] bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
-    [SerializeField] bool canAttack; // Se permite ejecutar ataque de nuevo al terminar el combo
+    bool canNextAction; // Se permite ejecutar la próxima acción leída por el input
+    bool canAttack; // Se permite ejecutar ataque de nuevo al terminar el combo
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     bool canRecovStam; // Permitir la recuperación de Stamina
     int currentAttack; // El ataque que se ejecutará, mandado por el input
+
+    [Header("Modifier Values")]
+    int previousStamina; // Detección de decrementos de stamina
 
     [Header("Initialization States")]
     bool isInitialized = false; // Indica que el Jugador se acaba de activar para recoger información inicial del Singleton
@@ -106,10 +111,13 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             // No dejamos la salud suba de su valor máximo
             health = maxHealth;
         }
-        else if (health < 0)
+        else if (health <= 0)
         {
             // No dejamos que la salud baje de 0
             health = 0;
+
+            // Estado de muerte
+            DeathState();
         }
     }
 
@@ -123,6 +131,27 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         health -= damageRecived;
     }
 
+    // En estado de muerte paramos la actividad
+    void DeathState()
+    {
+        // Solo activamos una vez al morir
+        if (isDead) return;
+
+        // Estado de muerte
+        isDead = true;
+
+        // Comunicamos muerte al Singleton
+        GameManager.Instance.dead = true;
+
+        // Movimiento bloqueado
+        ManageMovement("moveLock");
+        ManageMovement("rotLock");
+        ManageMovement("markLock");
+
+        // Animación de muerte
+        anim.DeathAnimation();
+    }
+
     #endregion
 
     #region StaminaManagement
@@ -130,6 +159,9 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // Manejo de la Stamina del jugador
     void StaminaManagement()
     {
+        // En estado de muerte no ejecutamos
+        if (isDead) return;
+
         if (stamina >= maxStamina)
         {
             // No dejamos Stamina suba de su valor máximo
@@ -199,11 +231,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // Gestiona cual es el próximo ataque y lo ejecuta
     void Attack() 
     {
+        // En estado de muerte no ejecutamos
+        if (isDead) return;
+
         // Solo accionamos si tenemos permiso de atacar y no ha terminado el combo
         if (!canNextAction || !canAttack || currentAttack >= maxComboAttacks) return;
 
         // Solo ejecutamos si tenemos stamina suficiente
-        if (stamina < attackStamCost) return;
+        if (stamina <= 0) return;
 
         // Actualizamos estados
         SetStates(true, false, false);
@@ -271,11 +306,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // Ejecutar Esquive
     void Roll()
     {
+        // En estado de muerte no ejecutamos
+        if (isDead) return;
+
         // Solo ejecutamos si tenemos permiso
         if (!canNextAction) return;
         
         // Solo ejecutamos si tenemos stamina suficiente
-        if (stamina < rollStamCost) return;
+        if (stamina <= 0) return;
 
         // Actualizamos estados
         SetStates(false, true, false);
@@ -317,8 +355,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     // Ejecutar curación
     void Heal()
     {
+        // En estado de muerte no ejecutamos
+        if (isDead) return;
+
         // Solo ejecutamos si tenemos permiso
         if (!canNextAction) return;
+
+        // Solo ejecutamos si tenemos curativos
+        if (healItems < 1) return;
 
         // Actualizamos estados
         SetStates(false, false, true);
@@ -330,8 +374,30 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         move.CancelResidualMove();
         move.CancelResidualRot();
 
+        // Consumo de item curativo
+        ConsumeHealing();
+
         // Reproducimos la animación de curación
         anim.HealAnimation();
+    }
+
+    // Manejo de la Curativos del jugador
+    void ConsumeHealing()
+    {
+        // Consumimos item
+        healItems--;
+
+        // Control de cantidad
+        if (healItems >= maxHealItems)
+        {
+            // No dejamos que los curativos suban de su valor máximo
+            healItems = maxHealItems;
+        }
+        else if (healItems <= 0)
+        {
+            // No dejamos los curativos bajen de 0
+            healItems = 0;
+        }
     }
 
     // Restablecer la salud
@@ -393,6 +459,11 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
         // Reseteo de ataques de combo
         if (!attacking) currentAttack = 0;
+
+        // Movimiento liberado entre acciones
+        ManageMovement("moveUnlock");
+        ManageMovement("rotUnlock");
+        ManageMovement("markUnlock");
     }
 
     #endregion
@@ -463,14 +534,17 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         {
             maxStamina = GameManager.Instance.maxStamina;
             maxHealth = GameManager.Instance.maxHealth;
+            maxHealItems = GameManager.Instance.maxHealItems;
             health = GameManager.Instance.health;
             stamina = GameManager.Instance.stamina;
+            healItems = GameManager.Instance.healItems;
         }
         else
         {
             // Si el objeto ya se ha iniciado, comunicamos constantemente los datos necesarios al Singleton
             GameManager.Instance.health = health;
             GameManager.Instance.stamina = stamina;
+            GameManager.Instance.healItems = healItems;
         }
     }
 

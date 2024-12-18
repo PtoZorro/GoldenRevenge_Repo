@@ -270,7 +270,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.5, y: 1.2, z: 0.9}
+  m_Size: {x: 0.25, y: 1.2, z: 0.9}
   m_Center: {x: 0, y: 0.9, z: 0.55}
 --- !u!114 &1519670776392701360
 MonoBehaviour:
@@ -294,9 +294,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4137722271817245900}
+  - component: {fileID: 1367554064662485523}
   - component: {fileID: 6253835986837624084}
   - component: {fileID: 5158140493162577033}
-  - component: {fileID: 1367554064662485523}
   - component: {fileID: 8614008358168643514}
   - component: {fileID: 4532420457529227369}
   - component: {fileID: 4669603627222008566}
@@ -325,6 +325,27 @@ Transform:
   - {fileID: 8786835883825467352}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1367554064662485523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495958813140119607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5f21bb93192e5445aa94625b2e2b299, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lockCamPoint: {fileID: 4112542645010264016}
+  weaponCollider: {fileID: 4186912985777537809}
+  weapon: {fileID: 7940740700848125274}
+  health: 0
+  maxHealth: 1000
+  comboDamages: c8000000fa0000002c010000
+  maxComboAttacks: 3
+  attackRate: 0.5
+  isAttacking: 0
 --- !u!114 &6253835986837624084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,6 +372,8 @@ MonoBehaviour:
   isChasing: 0
   isPatrolling: 0
   returnPatrol: 0
+  moveLocked: 0
+  rotationLocked: 0
 --- !u!195 &5158140493162577033
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -373,28 +396,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1367554064662485523
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4495958813140119607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5f21bb93192e5445aa94625b2e2b299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lockCamPoint: {fileID: 4112542645010264016}
-  weaponCollider: {fileID: 4186912985777537809}
-  weapon: {fileID: 7940740700848125274}
-  health: 0
-  maxHealth: 1000
-  comboDamages: c8000000fa0000002c010000
-  maxComboAttacks: 3
-  attackRate: 0.5
-  isAttacking: 0
-  rotationLocked: 0
 --- !u!114 &8614008358168643514
 MonoBehaviour:
   m_ObjectHideFlags: 0

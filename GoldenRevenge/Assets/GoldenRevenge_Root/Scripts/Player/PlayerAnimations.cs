@@ -39,25 +39,19 @@ public class PlayerAnimations : MonoBehaviour
     // Manejo de animaciones de movimiento
     void MoveAnimations()
     {
-        // Si estamos atacando, rodando o curándonos no hay movimiento (¡¡¡Cambiar con un estado general de interrupción!!!)
-        if (combat.isAttacking || combat.isRolling || combat.isHealing)
-        {
-            return;
-        }
-
         // Obtener la magnitud del input de movimiento
         float inputMagnitude = move.moveInput.magnitude;
 
-        // Según la velocidad activamos animación de caminar o trotar
+        // Según la velocidad o si tenemos cámara fijada activamos animación de caminar o trotar
 
-        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim) // Animación de caminado
+        if (inputMagnitude > 0 && inputMagnitude < minSpeedToRunAnim && !cam.camLocked) // Animación de caminado
         {
             currentAnim = "walk";
 
             // Velocidad de la animación según la velocidad de movimiento
             anim.SetFloat("walkSpeed", Mathf.Lerp(walkAnimMinSpeed, 1f, inputMagnitude / minSpeedToRunAnim));
         }
-        else if (inputMagnitude >= minSpeedToRunAnim) // Animación de trote
+        else if (inputMagnitude > 0 && (inputMagnitude >= minSpeedToRunAnim || cam.camLocked)) // Animación de trote
         {
             currentAnim = "run";
         }
@@ -89,9 +83,12 @@ public class PlayerAnimations : MonoBehaviour
         // Si la cámara no está fijada, solo trotamos hacia delante 
         if (!cam.camLocked)
         {
+            // La magnitud del imput suavizada
+            float speedMagnitude = new Vector2(currentXSpeed, currentYSpeed).magnitude;
+
             // Aplicar la magnitud de input a las variables del animator
             anim.SetFloat("XSpeed", 0);
-            anim.SetFloat("YSpeed", Mathf.Abs(currentYSpeed));
+            anim.SetFloat("YSpeed", Mathf.Abs(speedMagnitude));
         }
         else // Si la cámara está fijada en enemigo, se contemplan el trote hacia los 4 lados
         {
@@ -109,22 +106,25 @@ public class PlayerAnimations : MonoBehaviour
     public void AttackAnimations(int attackNum) 
     {
         // Activamos animación de ataque correspondiente a su número
-        currentAnim = "attack" + attackNum;
-        UpdateAnimationState();
+        anim.SetTrigger("attack" + attackNum);
     }
 
     // Animación de roll en marcha
     public void RollAnimation()
     {
-        currentAnim = "roll";
-        UpdateAnimationState();
+        anim.SetTrigger("roll");
     }    
     
     // Animación de curación en marcha
     public void HealAnimation()
     {
-        currentAnim = "heal";
-        UpdateAnimationState();
+        anim.SetTrigger("heal");
+    }
+
+    // Animación de muerte en marcha
+    public void DeathAnimation()
+    {
+        anim.SetTrigger("death");
     }
 
     #endregion

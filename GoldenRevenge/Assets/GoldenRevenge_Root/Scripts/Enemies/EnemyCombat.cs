@@ -23,9 +23,9 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
     [Header("Conditional Values")]
     public bool isAttacking; // Estado de atacando
     bool colliderActive; // Valor que indica que la HitBox del arma está activa
-    bool canNextAction; // Se permite ejecutar la próxima acción
+    [SerializeField] bool canNextAction; // Se permite ejecutar la próxima acción
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
-    int currentAttack; // El ataque que se ejecutará, mandado por el input
+    [SerializeField] int currentAttack; // El ataque que se ejecutará, mandado por el input
 
     // Posiciones
     Vector3 colliderInitialPos;

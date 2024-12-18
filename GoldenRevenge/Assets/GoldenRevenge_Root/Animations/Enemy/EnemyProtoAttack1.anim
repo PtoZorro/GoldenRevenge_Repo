@@ -1001,21 +1001,14 @@ AnimationClip:
   m_Events:
   - time: 0
     functionName: ManageMovement
-    data: moveLock
+    data: rotUnlock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0
     functionName: ManageMovement
-    data: rotUnlock
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 0.48333332
-    functionName: ManageMovement
-    data: rotLock
+    data: moveLock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -1023,6 +1016,13 @@ AnimationClip:
   - time: 0.5
     functionName: EnableCollider
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.73333335
+    functionName: ManageMovement
+    data: rotLock
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
