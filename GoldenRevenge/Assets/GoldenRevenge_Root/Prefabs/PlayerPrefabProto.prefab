@@ -967,8 +967,7 @@ MonoBehaviour:
   isRolling: 0
   isHealing: 0
   rollImpulse: 0
-  canNextAction: 0
-  canAttack: 0
+  SavePointPos: {x: 0, y: 0, z: 0}
 --- !u!114 &2489847356645051740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1073,7 +1072,7 @@ GameObject:
   - component: {fileID: 7318377331532734632}
   m_Layer: 0
   m_Name: WeaponCollider
-  m_TagString: PlayerWeapon
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

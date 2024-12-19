@@ -31,26 +31,10 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
     Vector3 colliderInitialPos;
     Quaternion colliderInitialRot;
 
-    void Awake()
-    {
-        // Valores de inicio prioritarios
-        colliderInitialPos = weaponCollider.transform.localPosition;
-        colliderInitialRot = weaponCollider.transform.localRotation;
-    }
-
     void Start()
     {
-        // Referencias
-        move = GetComponent<EnemyMovement>();
-        anim = GetComponent<EnemyAnimations>();
-
-        // Valores de inicio
-        health = maxHealth;
-        canNextAction = true;
-        currentAttack = 0;
-
-        // En el inicio los colliders de armas empiezan apagados
-        weaponCollider.SetActive(false);
+        // Set inicial de todos los valores
+        ResetValues();
     }
 
     void Update()
@@ -64,6 +48,41 @@ public class EnemyCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvents
         // Mantener el collider siguiendo al arma en el Rig
         FollowWeapon();
     }
+
+    #region ResetsManagement
+
+    // Al respawnear
+    void OnEnable()
+    {
+        ResetValues();
+    }
+
+    // Reseteo de Valores
+    void ResetValues()
+    {
+        // Referencias
+        move = GetComponent<EnemyMovement>();
+        anim = GetComponent<EnemyAnimations>();
+
+        // Valores de inicio
+        health = maxHealth;
+        isAttacking = false;    
+        canNextAction = true;
+        currentAttack = 0;
+        lockCamPoint.SetActive(true);
+
+        // Movimiento desbloqueado
+        ManageMovement("moveUnlock");
+        ManageMovement("rotUnlock");
+        ManageMovement("markUnlock");
+
+        // En el inicio los colliders de armas empiezan apagados
+        weaponCollider.SetActive(false);
+        colliderInitialPos = weaponCollider.transform.localPosition;
+        colliderInitialRot = weaponCollider.transform.localRotation;
+    }
+
+    #endregion
 
     #region HealthManagement
 

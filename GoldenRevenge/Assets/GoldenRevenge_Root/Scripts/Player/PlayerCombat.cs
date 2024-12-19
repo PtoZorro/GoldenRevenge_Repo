@@ -22,13 +22,16 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     int stamina; // Stamina del Jugador
     int healItems; // Número de curativos
 
-    [Header("Combat Settings")]
+    [Header("Combat Stats")]
     [SerializeField] int maxComboAttacks; // Número máximo de ataques en un mismo combo
     [SerializeField] int[] comboDamages; // Daños para cada ataque del combo
     [SerializeField] float attackRate; // Tiempo en que se nos permite accionar otro combo de ataques
     [SerializeField] int healthRestored; // Cantidad de salud restablecida al curarse
     [SerializeField] int attackStamCost; // Coste de stamina al realizar un ataque
     [SerializeField] int rollStamCost; // Coste de stamina al realizar un esquive
+
+    [Header("Scene Settings")]
+    [SerializeField] float deathTransitionDuration; // Tiempo que dura la transición de muerte
 
     [Header("States")]
     public bool isAttacking; // Estado de atacando
@@ -42,6 +45,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     bool canAttack; // Se permite ejecutar ataque de nuevo al terminar el combo
     bool canDealDamage; // Evitamos ejercer daño más de una vez por ataque ejecutado
     bool canRecovStam; // Permitir la recuperación de Stamina
+    bool canInteract; // Puede interactuar con objeto interactuable cercano
     int currentAttack; // El ataque que se ejecutará, mandado por el input
 
     [Header("Modifier Values")]
@@ -51,37 +55,16 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     bool isInitialized = false; // Indica que el Jugador se acaba de activar para recoger información inicial del Singleton
 
     [Header("Global Positions")]
+    [SerializeField] Transform initialSavePoint; // Punto de guardado establecido al inicio
+    [SerializeField] Vector3 savePointPos; // Punto de guardado establecido
+    [SerializeField] Vector3 bonfirePos; // Punto de la hoguera con la que podemos interactuar
     Vector3 colliderInitialPos;
     Quaternion colliderInitialRot;
 
-
-    void Awake()
-    {
-        // Valores de inicio prioritarios
-        colliderInitialPos = weaponCollider.transform.localPosition;
-        colliderInitialRot = weaponCollider.transform.localRotation;
-    }
-
     void Start()
     {
-        // Comunicación inicial con el Singleton
-        SingletonUpdate();
-
-        // Referencias
-        move = GetComponent<PlayerMovement>();
-        anim = GetComponent<PlayerAnimations>();
-
-        // Valores de inicio
-        previousStamina = stamina;
-        currentAttack = 0;
-        canNextAction = true;
-        canAttack = true;
-
-        // En el inicio los colliders de armas empiezan apagados
-        weaponCollider.SetActive(false);
-
-        // Indicamos que ya se ha inicializado el objeto con sus valores iniciales
-        isInitialized = true;
+        // Set inicial de todos los valores
+        ResetValues();
     }
 
     void Update()
@@ -102,6 +85,51 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         SingletonUpdate();
     }
 
+    #region ResetsManagement
+
+    // Al respawnear
+    void OnEnable()
+    {
+        // Se ejecutan los reseteos necesarios
+        ResetValues();
+    }
+
+    // Reseteo de Valores 
+    void ResetValues()
+    {
+        // El objeto no está inicializado
+        isInitialized = false;
+
+        // Comunicación inicial con el Singleton
+        SingletonUpdate();
+
+        // Referencias
+        move = GetComponent<PlayerMovement>();
+        anim = GetComponent<PlayerAnimations>();
+
+        // Valores de inicio
+        isDead = false;
+        previousStamina = stamina;
+        currentAttack = 0;
+        canNextAction = true;
+        canAttack = true;
+
+        // Movimiento desbloqueado
+        ManageMovement("moveUnlock");
+        ManageMovement("rotUnlock");
+        ManageMovement("markUnlock");
+
+        // En el inicio los colliders de armas empiezan apagados
+        colliderInitialPos = weaponCollider.transform.localPosition;
+        colliderInitialRot = weaponCollider.transform.localRotation;
+        weaponCollider.SetActive(false);
+
+        // Indicamos que ya se ha inicializado el objeto con sus valores iniciales
+        isInitialized = true;
+    }
+
+    #endregion
+
     #region HealthManagement
 
     void HealthManagement()
@@ -117,7 +145,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             health = 0;
 
             // Estado de muerte
-            DeathState();
+            DeathReset();
         }
     }
 
@@ -132,7 +160,7 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
     }
 
     // En estado de muerte paramos la actividad
-    void DeathState()
+    void DeathReset()
     {
         // Solo activamos una vez al morir
         if (isDead) return;
@@ -142,6 +170,12 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
         // Comunicamos muerte al Singleton
         GameManager.Instance.dead = true;
+
+        // Comunicamos el último punto de guardado al Singleton
+        GameManager.Instance.savePointPos = savePointPos;
+
+        // Mandamos al Singleton el aviso de Respawn
+        Invoke(nameof(Respawn), deathTransitionDuration);
 
         // Movimiento bloqueado
         ManageMovement("moveLock");
@@ -415,6 +449,36 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
 
     #endregion
 
+    #region BonfireInteraction
+
+    // Interacción con el punto de guardado (hoguera)
+    void BonfireInteract()
+    {
+        // Si no podemos interactuar volvemos
+        if (!canInteract) return;
+
+        // Convertimos el punto de la hoguera en el nuevo punto de guardado
+        savePointPos = bonfirePos;
+
+        // Reseteamos el mapa
+        BonfireReset();
+    }
+
+    // Reseteo de valores al descansar en hoguera (¡¡¡Intentar diferenciarlo del estado de muerte!!!)
+    void BonfireReset()
+    {
+        // Comunicamos muerte al Singleton
+        GameManager.Instance.dead = true;
+
+        // Comunicamos el último punto de guardado al Singleton
+        GameManager.Instance.savePointPos = savePointPos;
+
+        // Mandamos al Singleton el aviso de Respawn
+        Invoke(nameof(Respawn), deathTransitionDuration);
+    }
+
+    #endregion
+
     #region WeaponHitboxManagement
 
     // Mantener el collider siguiendo al arma en el Rig
@@ -538,6 +602,14 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             health = GameManager.Instance.health;
             stamina = GameManager.Instance.stamina;
             healItems = GameManager.Instance.healItems;
+
+            // Si todavía no hay un punto de Respawn, lo define el jugador en escena
+            if (GameManager.Instance.savePointPos == Vector3.zero)
+            {
+                savePointPos = initialSavePoint.position;
+                GameManager.Instance.savePointPos = savePointPos;
+            }
+                
         }
         else
         {
@@ -545,6 +617,40 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
             GameManager.Instance.health = health;
             GameManager.Instance.stamina = stamina;
             GameManager.Instance.healItems = healItems;
+        }
+    }
+
+    // Llamar a la función del Singleton de Respawneo
+    void Respawn()
+    {
+        GameManager.Instance.RespawnPlayer();
+    }
+
+    #endregion
+
+    #region CollisionDetection
+
+    void OnTriggerEnter(Collider other)
+    {
+        // Verificar si el objeto es interactuable
+        if (other.CompareTag("Bonfire"))
+        {
+            canInteract = true;
+
+            // Almacenamos la posición de la hoguera temporalmente
+            bonfirePos = other.transform.position;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        // Verificar si el objeto es interactuable
+        if (other.CompareTag("Bonfire"))
+        {
+            canInteract = false;
+
+            // Mantenemos el punto de guardado anterior 
+            bonfirePos = savePointPos;
         }
     }
 
@@ -576,6 +682,15 @@ public class PlayerCombat : MonoBehaviour, IAnimationEvents, IGeneralStatesEvent
         if (context.started)
         {
             Heal();
+        }
+    }
+
+    // Lectura de input de curación
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            BonfireInteract();
         }
     }
 

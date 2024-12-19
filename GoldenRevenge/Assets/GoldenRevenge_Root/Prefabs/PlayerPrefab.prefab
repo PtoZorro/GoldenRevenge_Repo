@@ -238,6 +238,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: a730d6b5-017a-4ebf-b3e7-80f3b507b561
     m_ActionName: Gameplay/Heal[/Keyboard/r]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1817242472868964934}
+        m_TargetAssemblyTypeName: PlayerCombat, Assembly-CSharp
+        m_MethodName: OnInteract
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e7cb950f-f3b3-4cb7-8fa4-7b32c2098d69
+    m_ActionName: Gameplay/Interact[/Keyboard/e,/XInputControllerWindows/buttonNorth]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Gameplay
@@ -265,10 +281,14 @@ MonoBehaviour:
   healthRestored: 600
   attackStamCost: 250
   rollStamCost: 150
+  deathTransitionDuration: 2
   isAttacking: 0
   isRolling: 0
   isHealing: 0
-  rollImpulse: 0
+  rollImpulse: 1
+  initialSavePoint: {fileID: 0}
+  savePointPos: {x: 0, y: 0, z: 0}
+  bonfirePos: {x: 0, y: 0, z: 0}
 --- !u!114 &8088735437738969343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -653,7 +673,7 @@ GameObject:
   - component: {fileID: 7345574196601406419}
   m_Layer: 0
   m_Name: WeaponCollider
-  m_TagString: PlayerWeapon
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

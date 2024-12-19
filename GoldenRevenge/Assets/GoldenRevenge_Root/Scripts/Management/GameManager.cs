@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     [Header("States")]
     public bool dead; // Estado de muerte del jugador
 
+    [Header("Global Positions")]
+    public Vector3 savePointPos; // Punto de respawn de la última hoguera visitada
+
     void Awake()
     {
         // Asegura que solo exista una instancia
@@ -51,12 +54,35 @@ public class GameManager : MonoBehaviour
         
     }
 
+    // Valores del jugador de inicio del juego 
     void PlayerInitialStates()
     {
         // Valores iniciales
         health = maxHealth;
         stamina = maxStamina;
         healItems = maxHealItems;
+    }
+
+    // Funciones de respawneo del jugador
+    public void RespawnPlayer()
+    {
+        // Reseteamos al jugador
+        Player.SetActive(false);
+
+        // Valores de inicio del jugador
+        PlayerInitialStates();
+
+        // Reseteo de enemigos del nivel
+        EnemyManager.Instance.RespawnEnemies();
+
+        // Llevamos al jugador al último punto de guardado 
+        Player.transform.position = savePointPos;
+
+        // Estado de muerte desactivado
+        dead = false;
+
+        // Despertamos al jugador
+        Player.SetActive(true);
     }
 
     #region SceneManagement
